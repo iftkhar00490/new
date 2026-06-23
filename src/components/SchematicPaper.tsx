@@ -517,7 +517,7 @@ export default function SchematicPaper() {
                 <div className="md:col-span-6 flex flex-col gap-4">
                   <div className="text-xs font-mono text-neutral-500 uppercase tracking-wide">// INFERENCE_REPORT:</div>
                   
-                  <div className="border border-neutral-200 rounded p-4 bg-neutral-50/50 flex flex-col gap-4 min-h-[220px] justify-between">
+                  <div className="border border-neutral-200 rounded p-4 bg-neutral-50/50 flex flex-col gap-4 min-h-[260px] justify-between relative pb-10">
                     {result ? (
                       <>
                         {/* Upper Stats Row */}
@@ -532,11 +532,11 @@ export default function SchematicPaper() {
                           </div>
                           <div className="font-mono">
                             <div className="text-[9px] text-neutral-400 uppercase">Inference Speed</div>
-                            <div className="text-xs font-bold text-neutral-900">{result.latency} ms</div>
+                            <div className="text-xs font-bold text-neutral-950">{result.latency} ms</div>
                           </div>
                           <div className="font-mono">
                             <div className="text-[9px] text-neutral-400 uppercase">Target Device</div>
-                            <div className="text-xs font-bold text-neutral-900">Apple A17 / Edge NPU</div>
+                            <div className="text-xs font-bold text-neutral-950">Apple A17 / Edge NPU</div>
                           </div>
                         </div>
 
@@ -578,6 +578,11 @@ export default function SchematicPaper() {
                         </div>
                       </div>
                     )}
+
+                    {/* Credit Clause */}
+                    <div className="absolute bottom-2 left-4 right-4 text-[7.5px] font-mono text-neutral-400 uppercase tracking-wider text-center border-t border-neutral-200/80 pt-2">
+                      BEAUTIFIED BY GEMINI , I MADE the original shit from model to display
+                    </div>
                   </div>
 
                 </div>
