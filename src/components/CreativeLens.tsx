@@ -6,7 +6,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, ZoomIn, Eye, Activity, Shield } from "lucide-react";
+import { Camera, ZoomIn, Eye, Activity, Shield, X } from "lucide-react";
 
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -101,6 +101,7 @@ export default function CreativeLens() {
   const sliderRef = useRef<HTMLDivElement>(null);
   const sliderContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Preload all slider images on mount
   useEffect(() => {
@@ -297,6 +298,7 @@ export default function CreativeLens() {
                     return (
                       <div
                         key={`${lens.zoom}-${imgIdx}`}
+                        onClick={() => setSelectedImage(img.src)}
                         className={`relative gallery-card h-[220px] md:h-[300px] w-[220px] md:w-[300px] flex-shrink-0 border rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-between p-4 group cursor-pointer pointer-events-auto transition-[opacity,transform,border-color,background-color,box-shadow] duration-500 bg-neutral-950/60 ${
                           isFocusGroup 
                             ? "border-neutral-800 shadow-neutral-950/80 scale-100" 
@@ -367,6 +369,49 @@ export default function CreativeLens() {
         </div>
 
       </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
+            onClick={() => setSelectedImage(null)}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-6 right-6 text-white/70 hover:text-white p-2 rounded-full border border-white/10 bg-white/5 backdrop-blur hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Lightbox Content Container */}
+            <motion.div
+              initial={{ scale: 0.95, y: 10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 10 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="relative max-w-5xl max-h-[85vh] w-full h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Full Image */}
+              <div className="relative w-full h-full select-none rounded-xl overflow-hidden border border-neutral-800 shadow-2xl">
+                <Image
+                  src={selectedImage}
+                  alt="Full viewport photography capture"
+                  fill
+                  sizes="100vw"
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
