@@ -40,10 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# root level images
+# root level images & model binaries
 /*.jpg
 /*.png
 /*.jpeg
-
+*.h5
+*.onnx
 
 .vercel
