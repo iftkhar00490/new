@@ -123,7 +123,7 @@ export default function CreativeLens() {
           <div className="w-full flex justify-between items-center font-mono text-[11px] text-neutral-400 z-30 px-2">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              <span className="font-bold text-white tracking-widest uppercase">ME • OPTICAL ARCHIVE</span>
+              <span className="font-bold text-white tracking-widest uppercase">SIA.COM • OPTICAL ARCHIVE</span>
             </div>
 
             <div className="hidden md:flex items-center gap-6 text-[10px] text-neutral-500 uppercase tracking-widest font-semibold">

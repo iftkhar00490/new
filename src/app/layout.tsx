@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RAW // High-Fidelity Monochrome Portfolio",
-  description: "Single-page interactive portfolio website featuring Camille Mormal zoom, creative phone camera lens viewport, schematic blueprint paper, and automotive telemetry dashboard.",
+  title: "SIA.com // High-Fidelity Interactive Systems & Visuals",
+  description: "Interactive portfolio & systems architecture engineered by Shaikh Iftkhar (SIA).",
 };
 
 export default function RootLayout({
