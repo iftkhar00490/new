@@ -75,3 +75,70 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.25);
 }
+
+/* Leaflet Dark Theme Custom overrides */
+.leaflet-container {
+  background: #090909 !important;
+  font-family: inherit !important;
+}
+
+.leaflet-tile-container img {
+  filter: brightness(0.75) contrast(1.1) saturate(0.7) !important;
+}
+
+/* Custom pulsing map marker animation */
+@keyframes markerPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.custom-marker-pulse {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: rgba(34, 211, 238, 0.4);
+  border-radius: 50%;
+  animation: markerPulse 1.8s infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+  pointer-events: none;
+}
+
+/* Custom audio volume slider track and thumb */
+.volume-slider-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  width: 4px;
+  height: 100%;
+  position: relative;
+}
+
+.volume-slider-fill {
+  background: linear-gradient(180deg, #22d3ee, #06b6d4);
+  border-radius: 9999px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}
+
+.volume-slider-thumb {
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border: 2px solid #0891b2;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  cursor: grab;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+}
+
+.volume-slider-thumb:active {
+  cursor: grabbing;
+}
+

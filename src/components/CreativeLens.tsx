@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, AnimatePresence } from "framer-motion";
-import { Camera, ZoomIn, Eye, Activity, Shield, X } from "lucide-react";
+import { X, Sparkles, Filter, Grid, SlidersHorizontal } from "lucide-react";
+import lensDataset from "@/data/lens_dataset.json";
 
-// Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
 interface SliderImage {
@@ -22,391 +22,418 @@ interface SliderImage {
 
 interface LensData {
   zoom: string;
+  badgeLabel: string;
+  btnLabel: string;
   name: string;
   desc: string;
-  coords: { top: string; left: string };
   images: SliderImage[];
 }
 
-const SLIDER_CONFIG: LensData[] = [
-  {
-    zoom: "0.5x",
-    name: "Ultra-Wide Lens",
-    desc: "13mm equivalent focal length. Expanding spatial bounds for high-contrast architectural and cityscape captures.",
-    coords: { top: "22.0%", left: "23.4%" },
-    images: [
-      { src: "/images/0_5x/20251121_095049 (1).jpg", name: "Urban Perspective", iso: "100", aperture: "f/2.2", shutter: "1/500s", aspect: "9/16" },
-      { src: "/images/0_5x/20260126_174529.jpg", name: "Stark Structures", iso: "200", aperture: "f/2.2", shutter: "1/320s", aspect: "9/16" },
-      { src: "/images/0_5x/20260206_182217.jpg", name: "High-Contrast Edge", iso: "100", aperture: "f/2.2", shutter: "1/800s", aspect: "3/4" },
-      { src: "/images/0_5x/20260519_143737.jpg", name: "Monochrome Geometry", iso: "400", aperture: "f/2.2", shutter: "1/200s", aspect: "9/16" },
-    ],
-  },
-  {
-    zoom: "1x",
-    name: "Main Wide Lens",
-    desc: "24mm equivalent focal length. Capturing organic urban geometries and street layout perspectives.",
-    coords: { top: "44.0%", left: "23.4%" },
-    images: [
-      { src: "/images/1x/1774467048169.png", name: "Signal Overlay Grid", iso: "100", aperture: "f/1.8", shutter: "1/1000s", aspect: "9/16" },
-      { src: "/images/1x/20250424_224514 (1).jpg", name: "Street Crossing Patterns", iso: "160", aperture: "f/1.8", shutter: "1/640s", aspect: "16/9" },
-      { src: "/images/1x/20260308_174337.jpg", name: "Concrete Shadows", iso: "100", aperture: "f/1.8", shutter: "1/1200s", aspect: "9/16" },
-      { src: "/images/1x/VideoCapture_20240920-190610 (1).jpg", name: "Dynamic Horizon Frame", iso: "200", aperture: "f/1.8", shutter: "1/400s", aspect: "21/9" },
-    ],
-  },
-  {
-    zoom: "3x",
-    name: "Telephoto Lens",
-    desc: "72mm equivalent focal length. Compressing architectural elements and distant details into dense graphic patterns.",
-    coords: { top: "44.0%", left: "59.0%" },
-    images: [
-      { src: "/images/3x/20240307_073923 (1).jpg", name: "Compressed Facade Crops", iso: "100", aperture: "f/2.4", shutter: "1/250s", aspect: "16/9" },
-      { src: "/images/3x/20240403_205715.jpg", name: "Abstract Grate Structure", iso: "125", aperture: "f/2.4", shutter: "1/320s", aspect: "9/20" },
-      { src: "/images/3x/20250216_173836 (1).jpg", name: "Symmetric Architectural Lines", iso: "200", aperture: "f/2.4", shutter: "1/200s", aspect: "16/9" },
-      { src: "/images/3x/20260227_212306 (2).jpg", name: "High-Altitude Outlines", iso: "100", aperture: "f/2.4", shutter: "1/500s", aspect: "9/16" },
-    ],
-  },
-  {
-    zoom: "10x",
-    name: "Periscope Telephoto",
-    desc: "240mm equivalent focal length. Abstract crops of skyscrapers and details beyond human vision.",
-    coords: { top: "66.0%", left: "23.4%" },
-    images: [
-      { src: "/images/10x/1774523644782.jpg", name: "Abstract Skylight Beams", iso: "100", aperture: "f/4.9", shutter: "1/125s", aspect: "16/9" },
-      { src: "/images/10x/20240223_191531.jpg", name: "Telemetry Signal Outline", iso: "400", aperture: "f/4.9", shutter: "1/60s", aspect: "16/9" },
-      { src: "/images/10x/20251121_161908 (1).jpg", name: "Tonal Structural Grid", iso: "160", aperture: "f/4.9", shutter: "1/160s", aspect: "9/16" },
-      { src: "/images/10x/20260519_143828.jpg", name: "Macro Metal Framing", iso: "100", aperture: "f/4.9", shutter: "1/200s", aspect: "9/16" },
-    ],
-  },
+const LENS_METADATA = [
+  { zoom: "0.5x", badgeLabel: "0.5X ULTRA WIDE", btnLabel: "ULTRA WIDE" },
+  { zoom: "1x", badgeLabel: "1X MAIN", btnLabel: "MAIN" },
+  { zoom: "3x", badgeLabel: "3X TELE", btnLabel: "3X TELE" },
+  { zoom: "10x", badgeLabel: "10X SUPER TELE", btnLabel: "10X SUPER TELE" },
 ];
 
-const allImages = SLIDER_CONFIG.flatMap((lens, lensIdx) => 
-  lens.images.map(img => ({ ...img, lensIdx }))
+const SLIDER_CONFIG: LensData[] = lensDataset.map((item, idx) => ({
+  ...item,
+  badgeLabel: LENS_METADATA[idx]?.badgeLabel || item.zoom,
+  btnLabel: LENS_METADATA[idx]?.btnLabel || item.zoom,
+}));
+
+const SCRAMBLE_CHARS = "0123456789%#&*+!=?/░▒▓█";
+
+// Flatten all 56 images into a single master collection for full directory view
+const ALL_56_PHOTOS: (SliderImage & { zoom: string })[] = SLIDER_CONFIG.flatMap((lens) =>
+  lens.images.map((img) => ({ ...img, zoom: lens.zoom }))
 );
 
-const getAspectFrac = (aspectStr: string): number => {
-  const parts = aspectStr.split("/");
-  if (parts.length === 2) {
-    const num = parseFloat(parts[0]);
-    const den = parseFloat(parts[1]);
-    if (!isNaN(num) && !isNaN(den) && den !== 0) {
-      return num / den;
-    }
-  }
-  return 1.0;
-};
-
 export default function CreativeLens() {
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const sliderContainerRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [activeLensIdx, setActiveLensIdx] = useState(0);
+  const [subBatchIdx, setSubBatchIdx] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<(SliderImage & { zoom?: string }) | null>(null);
+  const [archiveFilter, setArchiveFilter] = useState<string>("ALL");
 
-  // Preload all slider images on mount
-  useEffect(() => {
-    SLIDER_CONFIG.forEach((lens) => {
-      lens.images.forEach((imgObj) => {
-        const img = new window.Image();
-        img.src = imgObj.src;
-      });
-    });
-  }, []);
+  // Ultra-smooth GSAP ScrollTrigger for pinned viewport & sub-batch progress
+  useGSAP(
+    () => {
+      if (!sectionRef.current) return;
 
-  useGSAP(() => {
-    const slider = sliderRef.current;
-    const trigger = triggerRef.current;
-    if (!slider || !trigger) return;
-
-    const cards = gsap.utils.toArray<HTMLDivElement>(".gallery-card");
-
-    const updateCardWidths = () => {
-      const container = sliderContainerRef.current;
-      const sld = sliderRef.current;
-      if (!container || !sld) return;
-
-      const containerRect = container.getBoundingClientRect();
-      const sliderRect = sld.getBoundingClientRect();
-      const containerCenter = containerRect.left + containerRect.width / 2;
-
-      const isMobile = window.innerWidth < 768;
-      const baseWidth = isMobile ? 220 : 300;
-      const gap = 24;
-      const paddingLeft = 48; // px-12
-
-      // Read phase
-      const targetWidths = cards.map((card, idx) => {
-        if (!card) return baseWidth;
-        const img = allImages[idx];
-        const aspectFrac = getAspectFrac(img.aspect);
-        const targetWidth = baseWidth * aspectFrac;
-
-        // Calculate unexpanded center of this card
-        const unexpandedCardCenter = sliderRect.left + paddingLeft + idx * (baseWidth + gap) + baseWidth / 2;
-        const dist = Math.abs(unexpandedCardCenter - containerCenter);
-
-        // Define threshold for expansion: within 45% of container width from center
-        const maxDist = containerRect.width * 0.45;
-        let t = 1 - Math.min(dist / maxDist, 1);
-        
-        // Smoothstep interpolation (ease-in-out)
-        t = t * t * (3 - 2 * t);
-
-        const width = baseWidth + (targetWidth - baseWidth) * t;
-        return width;
-      });
-
-      // Write phase
-      cards.forEach((card, idx) => {
-        if (card) {
-          gsap.set(card, { width: targetWidths[idx] });
-        }
-      });
-    };
-
-    // Horizontal Scroll Trigger
-    const scrollTween = gsap.to(slider, {
-      x: () => -(slider.scrollWidth - window.innerWidth * 0.72),
-      ease: "none",
-      scrollTrigger: {
-        trigger: trigger,
-        pin: containerRef.current,
-        scrub: 0.5,
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
         start: "top top",
         end: "bottom bottom",
+        scrub: 0.8,
         onUpdate: (self) => {
           const progress = self.progress;
-          let newIndex = 0;
-          if (progress < 0.25) newIndex = 0;
-          else if (progress < 0.5) newIndex = 1;
-          else if (progress < 0.75) newIndex = 2;
-          else newIndex = 3;
+          const totalLenses = SLIDER_CONFIG.length;
+          const currentLensFloat = progress * totalLenses;
+          const newLensIdx = Math.min(Math.floor(currentLensFloat), totalLenses - 1);
 
-          setActiveIndex(newIndex);
-          updateCardWidths();
+          // Calculate sub-batch rotation inside active lens
+          const lensFraction = currentLensFloat - newLensIdx;
+          const activeImagesCount = SLIDER_CONFIG[newLensIdx].images.length;
+          const numSubBatches = Math.max(1, Math.ceil(activeImagesCount / 8));
+          const newSubBatch = Math.min(
+            Math.floor(lensFraction * numSubBatches),
+            numSubBatches - 1
+          );
+
+          if (newLensIdx !== activeLensIdx) {
+            setActiveLensIdx(newLensIdx);
+            setSubBatchIdx(0);
+          } else if (newSubBatch !== subBatchIdx) {
+            setSubBatchIdx(newSubBatch);
+          }
         },
-        onRefresh: () => {
-          updateCardWidths();
-        },
-      },
-    });
-
-    // Run initial sizing with a slight delay to let layout settle
-    const timer = setTimeout(updateCardWidths, 100);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, { scope: triggerRef });
-
-  const activeLens = SLIDER_CONFIG[activeIndex];
-  const targetHighlight = activeLens.coords;
-
-  // Flatten the image array to calculate indices for progress dots
-  const allImages = SLIDER_CONFIG.flatMap((lens, lensIdx) => 
-    lens.images.map(img => ({ ...img, lensIdx }))
+      });
+    },
+    { dependencies: [activeLensIdx, subBatchIdx] }
   );
 
+  const setLensManual = (idx: number) => {
+    setActiveLensIdx(idx);
+    setSubBatchIdx(0);
+  };
+
+  const currentLens = SLIDER_CONFIG[activeLensIdx];
+  
+  // Slice images for current sub-batch so all 56 photos cycle through
+  const startImgIdx = (subBatchIdx * 8) % Math.max(1, currentLens.images.length);
+  const currentImages = Array.from({ length: 8 }, (_, i) => {
+    const imgIdx = (startImgIdx + i) % currentLens.images.length;
+    return currentLens.images[imgIdx];
+  });
+
+  // Filtered images for 56-photo darkroom directory
+  const filteredArchivePhotos =
+    archiveFilter === "ALL"
+      ? ALL_56_PHOTOS
+      : ALL_56_PHOTOS.filter((img) => img.zoom === archiveFilter);
+
   return (
-    <div ref={triggerRef} className="relative h-[600vh] w-full bg-black select-none">
-      {/* Pinned Container */}
-      <div 
-        ref={containerRef} 
-        className="relative h-screen w-full flex flex-col lg:flex-row items-stretch justify-between overflow-hidden border-b border-neutral-900"
-      >
-        {/* LEFT COLUMN: Camera Cluster Graphic & Highlight (28% width) */}
-        <div className="w-full lg:w-[28%] h-[35%] lg:h-full flex flex-col justify-center items-center bg-[#050505] border-b lg:border-b-0 lg:border-r border-neutral-900 z-20 relative p-4 md:p-8">
-          {/* Section HUD Info Placeholder */}
+    <div ref={sectionRef} className="relative bg-black text-white selection:bg-white selection:text-black">
+      {/* 1. PINNED STICKY VIEWPORT CONTAINER (h-[360vh]) */}
+      <div className="relative h-[360vh]">
+        <div className="sticky top-0 h-screen bg-black flex flex-col justify-between p-4 md:p-8 overflow-hidden border-t border-neutral-900 z-10">
+          
+          {/* STUDIO FREIGHT HEADER BAR */}
+          <div className="w-full flex justify-between items-center font-mono text-[11px] text-neutral-400 z-30 px-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+              <span className="font-bold text-white tracking-widest uppercase">ME • OPTICAL ARCHIVE</span>
+            </div>
 
-          {/* Section Heading Title */}
-          <div className="mb-6 text-center select-none z-10 px-4">
-            <h2 className="text-xl md:text-2xl font-sans font-light tracking-tight text-white leading-normal">
-              The <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-400 font-bold px-1.5">
-                greatest gear
-                {/* Sparkle 1 */}
-                <span className="absolute -top-1 -right-1.5 w-3 h-3 text-purple-400 animate-pulse">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                    <path d="M12 0L14.6 9.4L24 12L14.6 14.6L12 24L9.4 14.6L0 12L9.4 9.4Z" />
-                  </svg>
-                </span>
-                {/* Sparkle 2 */}
-                <span className="absolute -bottom-1 -left-1 w-2.5 h-2.5 text-indigo-400 animate-pulse delay-75">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                    <path d="M12 0L14.6 9.4L24 12L14.6 14.6L12 24L9.4 14.6L0 12L9.4 9.4Z" />
-                  </svg>
-                </span>
-              </span> ever I had
-            </h2>
+            <div className="hidden md:flex items-center gap-6 text-[10px] text-neutral-500 uppercase tracking-widest font-semibold">
+              <span>{ALL_56_PHOTOS.length} CURATED ARCHIVAL CAPTURES</span>
+            </div>
+
+            <span className="font-mono text-[11px] text-neutral-400 uppercase tracking-widest">CONTACT</span>
           </div>
 
-          <div className="hidden md:flex relative w-48 md:w-56 aspect-[1568/2720] bg-[#0c0c0c] border border-neutral-900 rounded-[2.8rem] shadow-[inset_0_0_40px_rgba(0,0,0,1)] p-4 flex items-center justify-center overflow-hidden">
-            {/* Transparent S21 camera module crop */}
-            <div className="relative w-full aspect-[1568/2720]">
-              <Image
-                src="/images/s21_camera.png"
-                alt="S21 Ultra Camera Module"
-                width={1024}
-                height={682}
-                priority
-                className="absolute max-w-none h-full w-auto"
-                style={{ left: "-52.9%" }}
-              />
+          {/* ASYMMETRICAL UNEVEN PHOTO MATRIX WITH CENTERED UNCONTAINED TEXT */}
+          <div className="flex-1 my-2 flex items-center justify-center max-w-7xl mx-auto w-full relative overflow-hidden">
+            
+            {/* CENTER STAGE: DYNAMIC LENS TITLE ELEVATED TO Z-50 ABOVE ALL PHOTO CARDS */}
+            <div className="absolute z-50 flex flex-col items-center justify-center text-center px-4 py-3 max-w-[200px] sm:max-w-md md:max-w-2xl pointer-events-none mx-auto">
+              <AnimatePresence mode="wait">
+                <motion.h2
+                  key={currentLens.zoom}
+                  initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="text-2xl sm:text-4xl md:text-6xl font-serif font-light text-white tracking-tight leading-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] w-full text-center"
+                >
+                  {currentLens.name}
+                </motion.h2>
+              </AnimatePresence>
 
-              {/* Focus target circle tracking active lens coordinate */}
+              <p className="text-[10px] sm:text-[11px] md:text-xs font-mono text-neutral-300 mt-2 leading-relaxed max-w-[180px] sm:max-w-sm md:max-w-lg drop-shadow-[0_4px_16px_rgba(0,0,0,1)] bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/10">
+                {currentLens.desc} ({currentLens.images.length} Captures)
+              </p>
+            </div>
+
+            {/* ASYMMETRICAL SURROUNDING PHOTO CLUSTERS WITH OPTICAL WARP ZOOM TRANSITION */}
+            <AnimatePresence mode="wait">
               <motion.div
-                layout
-                animate={{
-                  top: targetHighlight.top,
-                  left: targetHighlight.left,
-                }}
-                transition={{ type: "spring", stiffness: 100, damping: 18 }}
-                className="absolute w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/80 shadow-[0_0_15px_rgba(255,255,255,0.6)] pointer-events-none flex items-center justify-center -translate-x-1/2 -translate-y-1/2"
+                key={`${currentLens.zoom}-${subBatchIdx}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="absolute inset-0 w-full h-full p-2 grid grid-cols-12 grid-rows-12 gap-2.5 md:gap-3 pointer-events-none"
               >
-                {/* Dynamic crosshair elements inside the focus circle */}
-                <div className="w-full h-px bg-white/25 absolute" />
-                <div className="h-full w-px bg-white/25 absolute" />
-                <div className="w-1.5 h-1.5 bg-white rounded-full shadow-sm shadow-white animate-pulse" />
+                {/* Slot 1: TOP LEFT */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.02 }}
+                  onClick={() => setSelectedImage(currentImages[0])}
+                  className={`${
+                    currentImages[0].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] -ml-1 -mt-1 z-20" : "col-span-3 row-span-4 aspect-[9/16]"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[0].src} 
+                    alt={currentImages[0].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
+                    <span className="text-[10px] font-bold text-white truncate">{currentImages[0].name}</span>
+                    <span className="text-[8px] font-mono text-neutral-400">{currentImages[0].iso} ISO • {currentImages[0].aperture}</span>
+                  </div>
+                </motion.div>
+
+                {/* Slot 2: TOP MID-LEFT OVERLAP */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+                  onClick={() => setSelectedImage(currentImages[1])}
+                  className={`${
+                    currentImages[1].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-4 row-start-1 -ml-2 z-30" : "col-span-2 row-span-4 aspect-[9/16] col-start-4 row-start-1"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[1].src} 
+                    alt={currentImages[1].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
+                {/* Slot 3: TOP RIGHT */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
+                  onClick={() => setSelectedImage(currentImages[2])}
+                  className={`${
+                    currentImages[2].aspect === "16/9" ? "col-span-4 row-span-2 aspect-[16/9] col-start-9 row-start-1 z-10" : "col-span-2 row-span-4 aspect-[9/16] col-start-11 row-start-1"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[2].src} 
+                    alt={currentImages[2].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
+                {/* Slot 4: MID RIGHT OVERLAP */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                  onClick={() => setSelectedImage(currentImages[3])}
+                  className={`${
+                    currentImages[3].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-8 row-start-3 z-30 -mt-1" : "col-span-3 row-span-4 aspect-[9/16] col-start-9 row-start-3"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[3].src} 
+                    alt={currentImages[3].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
+                {/* Slot 5: MID LEFT OVERLAP */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
+                  onClick={() => setSelectedImage(currentImages[4])}
+                  className={`${
+                    currentImages[4].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-1 row-start-5 z-20" : "col-span-3 row-span-4 aspect-[9/16] col-start-1 row-start-5"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[4].src} 
+                    alt={currentImages[4].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
+                {/* Slot 6: MID FAR-RIGHT */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.14 }}
+                  onClick={() => setSelectedImage(currentImages[5])}
+                  className={`${
+                    currentImages[5].aspect === "16/9" ? "col-span-4 row-span-2 aspect-[16/9] col-start-9 row-start-5 z-10 -ml-2" : "col-span-2 row-span-4 aspect-[9/16] col-start-11 row-start-5"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[5].src} 
+                    alt={currentImages[5].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
+                {/* Slot 7: BOTTOM LEFT */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.16 }}
+                  onClick={() => setSelectedImage(currentImages[6])}
+                  className={`${
+                    currentImages[6].aspect === "16/9" ? "col-span-4 row-span-2 aspect-[16/9] col-start-1 row-start-9 z-10" : "col-span-2 row-span-4 aspect-[9/16] col-start-1 row-start-9"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[6].src} 
+                    alt={currentImages[6].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
+                {/* Slot 8: BOTTOM MID-LEFT OVERLAP */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.18 }}
+                  onClick={() => setSelectedImage(currentImages[7])}
+                  className={`${
+                    currentImages[7].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-4 row-start-9 z-30 -ml-2" : "col-span-3 row-span-4 aspect-[9/16] col-start-3 row-start-9"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[7].src} 
+                    alt={currentImages[7].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
+                {/* Slot 9: BOTTOM MID-RIGHT OVERLAP */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  onClick={() => setSelectedImage(currentImages[0])}
+                  className={`${
+                    currentImages[0].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-7 row-start-9 z-10" : "col-span-3 row-span-4 aspect-[9/16] col-start-7 row-start-9"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[0].src} 
+                    alt={currentImages[0].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
+                {/* Slot 10: BOTTOM RIGHT OVERLAP */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.22 }}
+                  onClick={() => setSelectedImage(currentImages[1])}
+                  className={`${
+                    currentImages[1].aspect === "16/9" ? "col-span-4 row-span-2 aspect-[16/9] col-start-9 row-start-9 z-20 -ml-2" : "col-span-3 row-span-4 aspect-[9/16] col-start-10 row-start-9"
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                >
+                  <Image 
+                    src={currentImages[1].src} 
+                    alt={currentImages[1].name} 
+                    fill 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </motion.div>
+
               </motion.div>
-            </div>
+            </AnimatePresence>
+
           </div>
 
-          {/* Focal details box */}
-          <div className="mt-6 w-full max-w-[240px] bg-black/60 border border-neutral-900 p-4 rounded-xl font-mono text-[10px] text-neutral-400 flex flex-col gap-2 shadow-lg">
-            <div className="text-white font-bold uppercase tracking-widest flex items-center gap-1.5 font-sans text-xs border-b border-neutral-900 pb-1.5">
-              <ZoomIn className="w-3.5 h-3.5 text-white" />
-              <span>ACTIVE: {activeLens.zoom}</span>
+          {/* EDITORIAL FOOTER */}
+          <div className="w-full flex justify-between items-center font-mono text-[10px] text-neutral-500 tracking-wider uppercase border-t border-neutral-900 pt-3 z-30 px-2">
+            <div className="flex items-center gap-1.5">
+              <a href="https://www.instagram.com/shaikh.visuals/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">IG</a>
+              <span>/</span>
+              <a href="https://www.linkedin.com/in/shaikh-iftkhar-986429197" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LI</a>
+              <span>/</span>
+              <a href="https://github.com/iftkhar00490" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GH</a>
             </div>
-            <span>SPEC: {activeLens.name}</span>
-            <p className="text-[9px] text-neutral-500 leading-relaxed font-light">{activeLens.desc}</p>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: Camille Mormal Horizontal Photo Slider (72% width) */}
-        <div 
-          ref={sliderContainerRef}
-          className="flex-1 lg:w-[72%] h-[65%] lg:h-full flex flex-col justify-center relative z-10 px-4 md:px-8 bg-black"
-        >
-          {/* Main Slider Track */}
-          <div className="overflow-hidden w-full flex items-center py-6">
-            <div
-              ref={sliderRef}
-              className="flex gap-6 items-center px-12 will-change-transform"
-            >
-              {SLIDER_CONFIG.map((lens, lensIdx) => (
-                <div key={lens.zoom} className="flex gap-6 items-center">
-                  {lens.images.map((img, imgIdx) => {
-                    const isFocusGroup = activeIndex === lensIdx;
-                    return (
-                      <div
-                        key={`${lens.zoom}-${imgIdx}`}
-                        onClick={() => setSelectedImage(img.src)}
-                        className={`relative gallery-card h-[220px] md:h-[300px] w-[220px] md:w-[300px] flex-shrink-0 border rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-between p-4 group cursor-pointer pointer-events-auto transition-[opacity,transform,border-color,background-color,box-shadow] duration-500 bg-neutral-950/60 ${
-                          isFocusGroup 
-                            ? "border-neutral-800 shadow-neutral-950/80 scale-100" 
-                            : "border-neutral-950 opacity-40 scale-[0.97]"
-                        }`}
-                      >
-                        {/* Technical header */}
-                        <div className="w-full flex justify-between items-center text-[8px] font-mono text-neutral-500 z-10">
-                          <span>0{imgIdx + 1}</span>
-                          <span className="w-1 h-1 bg-neutral-800 group-hover:bg-white rounded-full transition-colors" />
-                        </div>
-
-                        {/* Image area */}
-                        <div className="absolute inset-0">
-                          <Image
-                            src={img.src}
-                            alt={img.name}
-                            fill
-                            sizes="(max-width: 768px) 220px, 280px"
-                            className="object-cover grayscale brightness-[0.85] group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 ease-out"
-                          />
-                          
-                          {/* Centered '+' sign hover overlay */}
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-black/15">
-                            <div className="w-8 h-8 rounded-full border border-white/20 bg-black/60 backdrop-blur flex items-center justify-center">
-                              <span className="text-white font-sans text-lg font-light leading-none">+</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Technical HUD Footer (Specs Only, No Title) */}
-                        <div className="w-full bg-black/75 backdrop-blur-md border border-neutral-900/60 p-2 rounded-lg z-10">
-                          <div className="flex justify-between text-[8px] font-mono text-neutral-500 group-hover:text-white transition-colors">
-                            <span>ISO {img.iso}</span>
-                            <span>{img.aperture}</span>
-                            <span>{img.shutter}</span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Slider Progress HUD Footer */}
-          <div className="absolute bottom-10 left-12 right-12 flex justify-between items-center text-[10px] font-mono text-neutral-500 pointer-events-none">
-            <div className="flex gap-2 pointer-events-auto">
-              {SLIDER_CONFIG.map((lens, idx) => (
-                <div
-                  key={idx}
-                  className={`h-1.5 rounded-full transition-all duration-500 ${
-                    idx === activeIndex
-                      ? "w-8 bg-white"
-                      : "w-2 bg-neutral-800 hover:bg-neutral-600 cursor-pointer"
-                  }`}
-                  onClick={() => {
-                    const scrollPercent = [0.1, 0.35, 0.6, 0.85][idx];
-                    const scrollHeight = triggerRef.current?.getBoundingClientRect().height || 0;
-                    const topPos = (triggerRef.current?.offsetTop || 0) + scrollPercent * scrollHeight;
-                    window.scrollTo({ top: topPos, behavior: "smooth" });
-                  }}
-                />
-              ))}
-            </div>
+            <span>©2026 / Terms</span>
           </div>
         </div>
-
       </div>
 
-      {/* Lightbox Modal */}
+      {/* 2. LIGHTBOX INSPECTION MODAL */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
             onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-10"
           >
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-6 right-6 text-white/70 hover:text-white p-2 rounded-full border border-white/10 bg-white/5 backdrop-blur hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            {/* Lightbox Content Container */}
             <motion.div
-              initial={{ scale: 0.95, y: 10 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 10 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="relative max-w-5xl max-h-[85vh] w-full h-full flex items-center justify-center"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
+              className="relative max-w-4xl max-h-[90vh] bg-neutral-950 border border-neutral-850 rounded-2xl overflow-hidden flex flex-col shadow-2xl"
             >
-              {/* Full Image */}
-              <div className="relative w-full h-full select-none rounded-xl overflow-hidden border border-neutral-800 shadow-2xl">
+              {/* Modal Header */}
+              <div className="p-4 border-b border-neutral-900 flex justify-between items-center bg-black/60 font-mono text-xs">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
+                  <span className="text-white font-bold">{selectedImage.name}</span>
+                </div>
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="p-1.5 rounded-lg bg-neutral-900 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Modal Photo Viewport */}
+              <div className="relative w-full h-[60vh] bg-black flex items-center justify-center overflow-hidden">
                 <Image
-                  src={selectedImage}
-                  alt="Full viewport photography capture"
+                  src={selectedImage.src}
+                  alt={selectedImage.name}
                   fill
-                  sizes="100vw"
                   className="object-contain"
-                  priority
                 />
+              </div>
+
+              {/* Modal EXIF Telemetry Footer */}
+              <div className="p-4 bg-neutral-950 border-t border-neutral-900 grid grid-cols-3 gap-2 font-mono text-[10px] text-center">
+                <div className="bg-neutral-900/60 p-2 rounded-lg border border-neutral-850">
+                  <span className="text-neutral-500 block">SENSITIVITY</span>
+                  <span className="text-white font-bold">{selectedImage.iso} ISO</span>
+                </div>
+                <div className="bg-neutral-900/60 p-2 rounded-lg border border-neutral-850">
+                  <span className="text-neutral-500 block">APERTURE</span>
+                  <span className="text-white font-bold">{selectedImage.aperture}</span>
+                </div>
+                <div className="bg-neutral-900/60 p-2 rounded-lg border border-neutral-850">
+                  <span className="text-neutral-500 block">SHUTTER</span>
+                  <span className="text-white font-bold">{selectedImage.shutter}</span>
+                </div>
               </div>
             </motion.div>
           </motion.div>

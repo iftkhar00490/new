@@ -2,7 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/middleware";
 
 export async function proxy(request: NextRequest) {
-  return await createClient(request);
+  const response = await createClient(request);
+  response.headers.set("Access-Control-Allow-Origin", "*");
+  response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "*");
+  return response;
 }
 
 export const config = {

@@ -1,0 +1,478 @@
+[
+  {
+    "zoom": "0.5x",
+    "name": "0.5x Ultra Wide",
+    "desc": "13mm equivalent focal length. Expanding spatial bounds for high-contrast architectural captures.",
+    "images": [
+      {
+        "src": "/images/0_5x/20250801_130246.webp",
+        "name": "Urban Horizon #0246",
+        "iso": "100",
+        "aperture": "f/2.2",
+        "shutter": "1/200s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/0_5x/20251121_095049 (1).webp",
+        "name": "Perspective Matrix #5049",
+        "iso": "200",
+        "aperture": "f/2.2",
+        "shutter": "1/300s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/0_5x/20260126_174529.webp",
+        "name": "Metropolitan Grid #4529",
+        "iso": "200",
+        "aperture": "f/2.2",
+        "shutter": "1/700s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/0_5x/20260206_182217.webp",
+        "name": "Spatial Elevation #2217",
+        "iso": "200",
+        "aperture": "f/2.2",
+        "shutter": "1/700s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/0_5x/20260519_133256.webp",
+        "name": "Minimalist Angle #3256",
+        "iso": "400",
+        "aperture": "f/2.2",
+        "shutter": "1/500s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/0_5x/20260519_143737.webp",
+        "name": "Urban Horizon #3737",
+        "iso": "100",
+        "aperture": "f/2.2",
+        "shutter": "1/200s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/0_5x/20260618_134816.webp",
+        "name": "Zenith Crop #4816",
+        "iso": "400",
+        "aperture": "f/2.2",
+        "shutter": "1/500s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/0_5x/20260716_133118.webp",
+        "name": "Perspective Matrix #3118",
+        "iso": "400",
+        "aperture": "f/2.2",
+        "shutter": "1/900s",
+        "aspect": "9/16"
+      }
+    ]
+  },
+  {
+    "zoom": "1x",
+    "name": "1x Main",
+    "desc": "24mm equivalent focal length. Capturing organic urban geometries and street layout perspectives.",
+    "images": [
+      {
+        "src": "/images/1x/1769060012398.webp",
+        "name": "Concrete Form #2398",
+        "iso": "400",
+        "aperture": "f/1.8",
+        "shutter": "1/900s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/1x/1774467048169.webp",
+        "name": "Architectural Symmetry #8169",
+        "iso": "400",
+        "aperture": "f/1.8",
+        "shutter": "1/500s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/1x/20240223_191531.webp",
+        "name": "Stark Geometry #1531",
+        "iso": "200",
+        "aperture": "f/1.8",
+        "shutter": "1/300s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/1x/20250424_224514 (1).webp",
+        "name": "Concrete Form #4514",
+        "iso": "200",
+        "aperture": "f/1.8",
+        "shutter": "1/700s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/1x/20250603_001510.webp",
+        "name": "Perspective Matrix #1510",
+        "iso": "400",
+        "aperture": "f/1.8",
+        "shutter": "1/900s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/1x/20250603_150514 (1).webp",
+        "name": "Urban Horizon #0514",
+        "iso": "300",
+        "aperture": "f/1.8",
+        "shutter": "1/400s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/1x/20251127_191544.webp",
+        "name": "Skyline Outline #1544",
+        "iso": "300",
+        "aperture": "f/1.8",
+        "shutter": "1/400s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/1x/20260206_182217.webp",
+        "name": "Spatial Elevation #2217",
+        "iso": "200",
+        "aperture": "f/1.8",
+        "shutter": "1/700s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/1x/20260308_174337.webp",
+        "name": "Reflective Surface #4337",
+        "iso": "100",
+        "aperture": "f/1.8",
+        "shutter": "1/600s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/1x/20260328_051055.webp",
+        "name": "Spatial Elevation #1055",
+        "iso": "200",
+        "aperture": "f/1.8",
+        "shutter": "1/700s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/1x/VideoCapture_20240920-190610 (1).webp",
+        "name": "Skyline Outline #0610",
+        "iso": "100",
+        "aperture": "f/1.8",
+        "shutter": "1/600s",
+        "aspect": "16/9"
+      }
+    ]
+  },
+  {
+    "zoom": "3x",
+    "name": "3x Tele",
+    "desc": "72mm equivalent focal length. Compressing architectural elements into dense graphic patterns.",
+    "images": [
+      {
+        "src": "/images/3x/1766120150104.webp",
+        "name": "Stark Geometry #0104",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/300s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/1767798009081.webp",
+        "name": "Zenith Crop #9081",
+        "iso": "300",
+        "aperture": "f/2.4",
+        "shutter": "1/800s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/1768055219024.webp",
+        "name": "Stark Geometry #9024",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/300s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/1771181672656.webp",
+        "name": "Facade Contrast #2656",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/700s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/1773765312115.webp",
+        "name": "Urban Horizon #2115",
+        "iso": "100",
+        "aperture": "f/2.4",
+        "shutter": "1/600s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20240307_073923 (1).webp",
+        "name": "Structural Detail #3923",
+        "iso": "300",
+        "aperture": "f/2.4",
+        "shutter": "1/400s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20240403_205715.webp",
+        "name": "Stark Geometry #5715",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/300s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20250129_211641.webp",
+        "name": "Shadow & Light #1641",
+        "iso": "300",
+        "aperture": "f/2.4",
+        "shutter": "1/400s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20250216_173836 (1).webp",
+        "name": "Reflective Surface #3836",
+        "iso": "300",
+        "aperture": "f/2.4",
+        "shutter": "1/800s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20250424_223526.webp",
+        "name": "Spatial Elevation #3526",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/700s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20250424_225854 (1).webp",
+        "name": "Minimalist Angle #5854",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/700s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20250424_225900 (1).webp",
+        "name": "Concrete Form #5900",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/700s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20250424_225903 (2).webp",
+        "name": "Tonal Balance #5903",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/300s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20251118_074538 (1).webp",
+        "name": "Metropolitan Grid #4538",
+        "iso": "400",
+        "aperture": "f/2.4",
+        "shutter": "1/900s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20251119_055645.webp",
+        "name": "Reflective Surface #5645",
+        "iso": "100",
+        "aperture": "f/2.4",
+        "shutter": "1/600s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20260120_194757.webp",
+        "name": "Reflective Surface #4757",
+        "iso": "100",
+        "aperture": "f/2.4",
+        "shutter": "1/600s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20260203_181322 (1).webp",
+        "name": "Zenith Crop #1322",
+        "iso": "100",
+        "aperture": "f/2.4",
+        "shutter": "1/200s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20260207_125433.webp",
+        "name": "Concrete Form #5433",
+        "iso": "400",
+        "aperture": "f/2.4",
+        "shutter": "1/500s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20260207_161740.webp",
+        "name": "Monochrome Edge #1740",
+        "iso": "100",
+        "aperture": "f/2.4",
+        "shutter": "1/600s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20260227_212306 (2).webp",
+        "name": "Stark Geometry #2306",
+        "iso": "100",
+        "aperture": "f/2.4",
+        "shutter": "1/600s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20260423_071652.webp",
+        "name": "Tonal Balance #1652",
+        "iso": "300",
+        "aperture": "f/2.4",
+        "shutter": "1/800s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20260519_200207.webp",
+        "name": "Shadow & Light #0207",
+        "iso": "300",
+        "aperture": "f/2.4",
+        "shutter": "1/400s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/3x/20260627_191840 (1).webp",
+        "name": "Zenith Crop #1840",
+        "iso": "200",
+        "aperture": "f/2.4",
+        "shutter": "1/700s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/3x/20260716_124717.webp",
+        "name": "Reflective Surface #4717",
+        "iso": "100",
+        "aperture": "f/2.4",
+        "shutter": "1/600s",
+        "aspect": "9/16"
+      }
+    ]
+  },
+  {
+    "zoom": "10x",
+    "name": "10x Super Tele",
+    "desc": "240mm equivalent focal length. Abstract crops of skyscrapers and details beyond human vision.",
+    "images": [
+      {
+        "src": "/images/10x/1767606689126.webp",
+        "name": "Urban Horizon #9126",
+        "iso": "100",
+        "aperture": "f/4.9",
+        "shutter": "1/200s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/1771265074263.webp",
+        "name": "Shadow & Light #4263",
+        "iso": "300",
+        "aperture": "f/4.9",
+        "shutter": "1/800s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/1774523644782.webp",
+        "name": "Minimalist Angle #4782",
+        "iso": "400",
+        "aperture": "f/4.9",
+        "shutter": "1/500s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/10x/20240223_191531.webp",
+        "name": "Stark Geometry #1531",
+        "iso": "200",
+        "aperture": "f/4.9",
+        "shutter": "1/300s",
+        "aspect": "16/9"
+      },
+      {
+        "src": "/images/10x/20251121_161908 (1).webp",
+        "name": "Spatial Elevation #1908",
+        "iso": "400",
+        "aperture": "f/4.9",
+        "shutter": "1/900s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/20260106_141329.webp",
+        "name": "Concrete Form #1329",
+        "iso": "400",
+        "aperture": "f/4.9",
+        "shutter": "1/500s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/20260129_181433 (1).webp",
+        "name": "Structural Detail #1433",
+        "iso": "300",
+        "aperture": "f/4.9",
+        "shutter": "1/400s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/20260306_060040 (3).webp",
+        "name": "Minimalist Angle #0040",
+        "iso": "400",
+        "aperture": "f/4.9",
+        "shutter": "1/900s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/20260324_182742 (2).webp",
+        "name": "Facade Contrast #2742",
+        "iso": "100",
+        "aperture": "f/4.9",
+        "shutter": "1/600s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/20260413_045936.webp",
+        "name": "Minimalist Angle #5936",
+        "iso": "400",
+        "aperture": "f/4.9",
+        "shutter": "1/500s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/20260519_143828.webp",
+        "name": "Stark Geometry #3828",
+        "iso": "200",
+        "aperture": "f/4.9",
+        "shutter": "1/300s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/20260619_193940.webp",
+        "name": "Shadow & Light #3940",
+        "iso": "400",
+        "aperture": "f/4.9",
+        "shutter": "1/900s",
+        "aspect": "9/16"
+      },
+      {
+        "src": "/images/10x/20260714_175239 (1).webp",
+        "name": "Architectural Symmetry #5239",
+        "iso": "300",
+        "aperture": "f/4.9",
+        "shutter": "1/800s",
+        "aspect": "9/16"
+      }
+    ]
+  }
+]

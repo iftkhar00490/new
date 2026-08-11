@@ -9,21 +9,23 @@ interface CaseStudy {
   title: string;
   subtitle: string;
   desc: string;
+  url?: string;
   metrics: { label: string; value: string }[];
   visual: React.ReactNode;
 }
 
 const CASE_STUDIES: CaseStudy[] = [
   {
-    id: "gitex-2026",
-    tag: "Exhibition Planning // Marketing Ops",
-    title: "GITEX 2026 Booth Tier Analytics",
-    subtitle: "GeoAttendance Regional Launch",
-    desc: "Engineered booth tier space optimization and spatial throughput models. Designed lead capture funnel integrations and digital outreach pipelines, scaling attendee-to-lead conversion ratios.",
+    id: "geoattendance-sharjah",
+    tag: "Field Tracking // Regional Ops",
+    title: "Geoattendance App (Sharjah)",
+    subtitle: "Sapio Solutions Field Suite",
+    desc: "Engineered GPS geofenced check-in, real-time route tracking, and offline sync for field teams in Sharjah. Integrated selfie verification and automated HR timesheet pipelines.",
+    url: "https://sapiosolutions.ae/employee-tracking-app-in-sharjah/",
     metrics: [
-      { label: "Booth Throughput", value: "850/hr" },
-      { label: "Conversion Delta", value: "+34.2%" },
-      { label: "CAC Reduction", value: "18.5%" },
+      { label: "GPS Precision", value: "<5m" },
+      { label: "Sync Latency", value: "<250ms" },
+      { label: "Proxy Reduction", value: "99.4%" },
     ],
     visual: (
       <svg viewBox="0 0 100 40" className="w-full h-full text-neutral-500" fill="none" stroke="currentColor" strokeWidth="0.75">
@@ -31,8 +33,8 @@ const CASE_STUDIES: CaseStudy[] = [
         <rect x="55" y="5" width="40" height="30" rx="3" />
         <path d="M 45 20 L 55 20" strokeWidth="1" />
         <circle cx="50" cy="20" r="2" fill="currentColor" />
-        <text x="8" y="15" className="font-mono text-[5px]" fill="currentColor">Tier B</text>
-        <text x="58" y="15" className="font-mono text-[5px]" fill="currentColor">Tier A+</text>
+        <text x="8" y="15" className="font-mono text-[5px]" fill="currentColor">GPS Node</text>
+        <text x="58" y="15" className="font-mono text-[5px]" fill="currentColor">HR Sync</text>
       </svg>
     ),
   },
@@ -106,11 +108,14 @@ export default function StrategicOps() {
         {/* Compact 3-Column High-Density Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {CASE_STUDIES.map((study) => (
-            <motion.div
+            <motion.a
               key={study.id}
+              href={study.url || "#"}
+              target={study.url ? "_blank" : "_self"}
+              rel="noopener noreferrer"
               whileHover={{ y: -3, borderColor: "rgba(255, 255, 255, 0.2)" }}
               transition={{ duration: 0.2 }}
-              className="bg-neutral-900/40 border border-neutral-900 p-5 rounded-xl flex flex-col justify-between group hover:bg-neutral-900/60"
+              className="bg-neutral-900/40 border border-neutral-900 p-5 rounded-xl flex flex-col justify-between group hover:bg-neutral-900/60 block cursor-pointer"
             >
               <div>
                 {/* Meta details */}
@@ -119,8 +124,11 @@ export default function StrategicOps() {
                   <span className="w-1.5 h-1.5 bg-neutral-800 rounded-full group-hover:bg-white transition-colors" />
                 </div>
 
-                <h3 className="text-base font-sans font-bold text-white mb-1 tracking-tight">
-                  {study.title}
+                <h3 className="text-base font-sans font-bold text-white mb-1 tracking-tight flex items-center justify-between">
+                  <span>{study.title}</span>
+                  {study.url && (
+                    <span className="text-[9px] font-mono text-neutral-500 group-hover:text-white transition-colors">↗</span>
+                  )}
                 </h3>
                 <h4 className="text-[10px] font-mono text-neutral-400 mb-3 uppercase tracking-wider">
                   {study.subtitle}
@@ -146,7 +154,7 @@ export default function StrategicOps() {
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
       </div>
