@@ -46,5 +46,7 @@ next-env.d.ts
 /*.jpeg
 *.h5
 *.onnx
+public/models/*.glb
+public/model/
 
 .vercel
