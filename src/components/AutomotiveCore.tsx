@@ -754,7 +754,7 @@ export default function AutomotiveCore() {
         {/* Dynamic High-Res Cockpit Screenshot */}
         <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden border border-neutral-800 group bg-black shadow-inner">
           <Image
-            src="/images/porsche_cockpit_preview.png"
+            src="/images/porsche_cockpit_preview.webp"
             alt="1975 Porsche 911 930 Turbo Telematics Cockpit Experience"
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
