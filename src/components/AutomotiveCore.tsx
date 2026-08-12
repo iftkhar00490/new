@@ -496,7 +496,7 @@ export default function AutomotiveCore() {
     let carModel: THREE.Object3D | null = null;
 
     loader.load(
-      "/models/free_1975_porsche_911_930_turbo.glb",
+      "/models/free_1975_porsche_911_930_turbo_opt.glb",
       (gltf) => {
         carModel = gltf.scene;
         carModelRef.current = gltf.scene;
@@ -723,12 +723,10 @@ export default function AutomotiveCore() {
       />
 
       {/* Unbranded Supercar Cockpit Ambient Background Image */}
-      <Image
-        src="/images/cockpit.png"
+      <img
+        src="/images/cockpit.webp"
         alt="Italian Supercar Cockpit"
-        fill
-        className="object-cover opacity-25 grayscale mix-blend-luminosity pointer-events-none"
-        priority
+        className="absolute inset-0 w-full h-full object-cover opacity-25 grayscale mix-blend-luminosity pointer-events-none"
       />
 
       {/* Bezel Ambient Overlay Cage */}

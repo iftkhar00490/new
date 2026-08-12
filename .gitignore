@@ -46,7 +46,10 @@ next-env.d.ts
 /*.jpeg
 *.h5
 *.onnx
-public/models/*.glb
+# Block oversized GLBs but allow the optimized 12MB version
+public/models/free_1975_porsche_911_930_turbo.glb
+public/models/kimera_evo_37.glb
+public/models/car.glb
 public/model/
 
 .vercel
