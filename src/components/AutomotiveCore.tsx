@@ -477,8 +477,9 @@ export default function AutomotiveCore() {
     const loadingTimeout = setTimeout(() => setModelLoading(false), 20000);
 
     const modelUrls = [
-      "https://cdn.jsdelivr.net/gh/iftkhar00490/new@main/public/models/free_1975_porsche_911_930_turbo_opt.glb",
-      "/models/free_1975_porsche_911_930_turbo_opt.glb",
+      "/models/free_1975_porsche_911_930_turbo_opt.glb?v=2",
+      "https://cdn.jsdelivr.net/gh/iftkhar00490/new@main/public/models/free_1975_porsche_911_930_turbo_opt.glb?v=2",
+      "/models/car.glb",
       "https://raw.githubusercontent.com/iftkhar00490/new/main/public/models/free_1975_porsche_911_930_turbo_opt.glb"
     ];
 
@@ -534,21 +535,30 @@ export default function AutomotiveCore() {
                     try {
                       const name = (mat.name || "").toLowerCase();
                       
-                      if (name === "paint" || name.includes("paint") || name.includes("carroceria")) {
+                      if (name === "paint" || name.includes("paint") || name.includes("carroceria") || name.includes("primary")) {
                         mat.color.set(paintColor);
                         mat.roughness = 0.2;
                         mat.metalness = 0.85;
+                      } else if (name === "coat") {
+                        mat.transparent = true;
+                        mat.opacity = 0.15;
+                        mat.depthWrite = false;
+                        mat.color.set(paintColor);
                       } else if (name.includes("glass") || name.includes("930_lights_refraction") || name.includes("cristales")) {
                         mat.transparent = true;
                         mat.opacity = 0.35;
                         mat.depthWrite = false;
                         mat.side = THREE.DoubleSide;
-                      } else if (name.includes("930_chromes") || name.includes("chrome")) {
+                      } else if (name.includes("930_chromes") || name.includes("chrome") || name.includes("chasis")) {
                         mat.metalness = 0.95;
                         mat.roughness = 0.08;
                         mat.side = THREE.DoubleSide;
-                      } else if (name.includes("930_rim") || name.includes("930_tire") || name.includes("930_plastics") || name.includes("plastic")) {
+                      } else if (name.includes("930_rim") || name.includes("930_tire") || name.includes("930_plastics") || name.includes("plastic") || name.includes("ruedas")) {
                         mat.side = THREE.DoubleSide;
+                      } else if (name === "material_0" || name.includes("shadow")) {
+                        mat.transparent = true;
+                        mat.opacity = 0.4;
+                        mat.depthWrite = false;
                       }
                     } catch (_) {}
                   });
