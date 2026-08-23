@@ -400,7 +400,7 @@ export default function AutomotiveCore() {
     return () => cancelAnimationFrame(animId);
   }, [activeApp]);
 
-  // Three.js 3D WebGL Kimera EVO 37 Supercar Engine Initialization Hook
+  // Three.js 3D WebGL Porsche 911 Supercar Engine Initialization Hook
   useEffect(() => {
     if (!threeContainerRef.current) return;
     const container = threeContainerRef.current;
@@ -413,8 +413,8 @@ export default function AutomotiveCore() {
     const height = container.clientHeight || 300;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
-    camera.position.set(2.8, 0.85, 2.8);
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    camera.position.set(3.2, 1.2, 3.2);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
@@ -422,7 +422,7 @@ export default function AutomotiveCore() {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.2;
     container.appendChild(renderer.domElement);
 
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -437,48 +437,29 @@ export default function AutomotiveCore() {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.minDistance = 2.0;
+    controls.minDistance = 1.8;
     controls.maxDistance = 8.0;
     controls.maxPolarAngle = Math.PI / 2 - 0.05;
-    controls.target.set(0, 0, 0);
+    controls.target.set(0, 0.15, 0);
     controls.update();
 
-    const resizeHandler = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      if (w > 0 && h > 0) {
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
-      }
-    };
-    window.addEventListener("resize", resizeHandler);
-    setTimeout(resizeHandler, 100);
-
-    const hemiLight = new THREE.HemisphereLight(0xf2f4ff, 0x363b42, 0.6);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333333, 1.5);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xfff4e8, 1.8);
-    keyLight.position.set(-4.0, 6.0, 5.5);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    keyLight.position.set(-5.0, 8.0, 6.0);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.set(2048, 2048);
     keyLight.shadow.bias = -0.00025;
     keyLight.shadow.normalBias = 0.018;
-    keyLight.shadow.camera.near = 0.5;
-    keyLight.shadow.camera.far = 20;
-    keyLight.shadow.camera.left = -5;
-    keyLight.shadow.camera.right = 5;
-    keyLight.shadow.camera.top = 5;
-    keyLight.shadow.camera.bottom = -5;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xa8c4ff, 0.6);
-    fillLight.position.set(4.0, 3.0, 3.5);
+    const fillLight = new THREE.DirectionalLight(0xa8c4ff, 1.2);
+    fillLight.position.set(5.0, 4.0, 4.0);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(0xfff1c4, 0.9);
-    rimLight.position.set(0.5, 4.5, -6.0);
+    const rimLight = new THREE.DirectionalLight(0xffecd0, 1.8);
+    rimLight.position.set(0, 5.0, -6.0);
     scene.add(rimLight);
 
     const floorGeo = new THREE.PlaneGeometry(30, 30);
@@ -493,87 +474,109 @@ export default function AutomotiveCore() {
     setModelLoading(true);
     setModelProgress(0);
 
-    // Safety timeout: clear loading spinner after 20s regardless
     const loadingTimeout = setTimeout(() => setModelLoading(false), 20000);
 
-    let carModel: THREE.Object3D | null = null;
-
-    loader.load(
+    const modelUrls = [
       "https://cdn.jsdelivr.net/gh/iftkhar00490/new@main/public/models/free_1975_porsche_911_930_turbo_opt.glb",
-      (gltf) => {
-        try {
-          clearTimeout(loadingTimeout);
-          carModel = gltf.scene;
-          carModelRef.current = gltf.scene;
-          
-          const box = new THREE.Box3().setFromObject(carModel);
-          const center = box.getCenter(new THREE.Vector3());
-          const size = box.getSize(new THREE.Vector3());
-          
-          const maxDim = Math.max(size.x, size.y, size.z);
-          const scale = 4.6 / maxDim;
-          
-          const yOffset = 0.35;
-          carModel.position.set(-center.x, -center.y + yOffset, -center.z);
-          carModel.scale.set(scale, scale, scale);
+      "/models/free_1975_porsche_911_930_turbo_opt.glb",
+      "https://raw.githubusercontent.com/iftkhar00490/new/main/public/models/free_1975_porsche_911_930_turbo_opt.glb"
+    ];
 
-          const floorObj = scene.getObjectByName("shadow_floor");
-          if (floorObj) {
-            floorObj.position.y = - (size.y * scale) / 2 + yOffset;
-          }
-          
-          carModel.traverse((node: any) => {
-            if (node.isMesh) {
-              node.castShadow = true;
-              node.receiveShadow = true;
-
-              if (node.material) {
-                const mats = Array.isArray(node.material) ? node.material : [node.material];
-                mats.forEach((mat: any) => {
-                  try {
-                    const name = (mat.name || "").toLowerCase();
-                    
-                    if (name === "paint" || name.includes("paint") || name.includes("carroceria")) {
-                      mat.color.set(paintColor);
-                      mat.roughness = 0.18;
-                      mat.metalness = 0.85;
-                    } else if (name.includes("glass") || name.includes("930_lights_refraction") || name.includes("cristales")) {
-                      mat.transparent = true;
-                      mat.opacity = 0.35;
-                      mat.depthWrite = false;
-                      mat.side = THREE.DoubleSide;
-                    } else if (name.includes("930_chromes") || name.includes("chrome")) {
-                      mat.metalness = 0.95;
-                      mat.roughness = 0.08;
-                      mat.side = THREE.DoubleSide;
-                    } else if (name.includes("930_rim") || name.includes("930_tire") || name.includes("930_plastics") || name.includes("plastic")) {
-                      mat.side = THREE.DoubleSide;
-                    }
-                  } catch (_) {}
-                });
-              }
-            }
-          });
-
-          scene.add(carModel);
-        } catch (err) {
-          console.error("Error processing Porsche GLB scene:", err);
-        } finally {
-          setModelLoading(false);
-        }
-      },
-      (xhr) => {
-        if (xhr.total > 0) {
-          const percent = Math.min(99, Math.round((xhr.loaded / xhr.total) * 100));
-          setModelProgress(percent);
-        }
-      },
-      (error) => {
+    const tryLoadModel = (urlIndex: number) => {
+      if (urlIndex >= modelUrls.length) {
         clearTimeout(loadingTimeout);
-        console.error("Error loading Porsche 911 3D model:", error);
         setModelLoading(false);
+        return;
       }
-    );
+
+      const url = modelUrls[urlIndex];
+      loader.load(
+        url,
+        (gltf) => {
+          try {
+            clearTimeout(loadingTimeout);
+            const rawCar = gltf.scene;
+
+            // 1. Calculate raw bounding box and scale to target size
+            const rawBox = new THREE.Box3().setFromObject(rawCar);
+            const rawSize = rawBox.getSize(new THREE.Vector3());
+            const maxDim = Math.max(rawSize.x, rawSize.y, rawSize.z) || 1;
+            const targetScale = 3.6 / maxDim;
+            rawCar.scale.set(targetScale, targetScale, targetScale);
+
+            // 2. Recompute bounding box AFTER scaling to get exact center & dimensions
+            const scaledBox = new THREE.Box3().setFromObject(rawCar);
+            const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+            const scaledSize = scaledBox.getSize(new THREE.Vector3());
+
+            // 3. Shift car so its geometric center aligns with (0, yOffset, 0)
+            const yOffset = 0.15;
+            rawCar.position.set(-scaledCenter.x, -scaledCenter.y + yOffset, -scaledCenter.z);
+
+            // 4. Wrap in a root Group so rotation spins cleanly around (0, 0, 0)
+            const carRoot = new THREE.Group();
+            carRoot.add(rawCar);
+            carModelRef.current = carRoot;
+
+            const floorObj = scene.getObjectByName("shadow_floor");
+            if (floorObj) {
+              floorObj.position.y = yOffset - (scaledSize.y / 2);
+            }
+
+            rawCar.traverse((node: any) => {
+              if (node.isMesh) {
+                node.castShadow = true;
+                node.receiveShadow = true;
+
+                if (node.material) {
+                  const mats = Array.isArray(node.material) ? node.material : [node.material];
+                  mats.forEach((mat: any) => {
+                    try {
+                      const name = (mat.name || "").toLowerCase();
+                      
+                      if (name === "paint" || name.includes("paint") || name.includes("carroceria")) {
+                        mat.color.set(paintColor);
+                        mat.roughness = 0.2;
+                        mat.metalness = 0.85;
+                      } else if (name.includes("glass") || name.includes("930_lights_refraction") || name.includes("cristales")) {
+                        mat.transparent = true;
+                        mat.opacity = 0.35;
+                        mat.depthWrite = false;
+                        mat.side = THREE.DoubleSide;
+                      } else if (name.includes("930_chromes") || name.includes("chrome")) {
+                        mat.metalness = 0.95;
+                        mat.roughness = 0.08;
+                        mat.side = THREE.DoubleSide;
+                      } else if (name.includes("930_rim") || name.includes("930_tire") || name.includes("930_plastics") || name.includes("plastic")) {
+                        mat.side = THREE.DoubleSide;
+                      }
+                    } catch (_) {}
+                  });
+                }
+              }
+            });
+
+            scene.add(carRoot);
+          } catch (err) {
+            console.error("Error processing Porsche GLB scene:", err);
+          } finally {
+            setModelLoading(false);
+          }
+        },
+        (xhr) => {
+          if (xhr.total > 0) {
+            const percent = Math.min(99, Math.round((xhr.loaded / xhr.total) * 100));
+            setModelProgress(percent);
+          }
+        },
+        (error) => {
+          console.warn(`Model failed to load from ${url}, trying fallback...`, error);
+          tryLoadModel(urlIndex + 1);
+        }
+      );
+    };
+
+    tryLoadModel(0);
 
     let animId: number;
     const animate = () => {
@@ -593,19 +596,21 @@ export default function AutomotiveCore() {
     };
     animate();
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener("resize", handleResize);
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width: w, height: h } = entry.contentRect;
+        if (w > 0 && h > 0) {
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h, false);
+        }
+      }
+    });
+    resizeObserver.observe(container);
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
       renderer.dispose();
       controls.dispose();
     };
@@ -618,7 +623,7 @@ export default function AutomotiveCore() {
       if (node.isMesh && node.material) {
         const mats = Array.isArray(node.material) ? node.material : [node.material];
         mats.forEach((mat: any) => {
-          const name = mat.name.toLowerCase();
+          const name = (mat.name || "").toLowerCase();
           if (
             name.includes("carroceria") ||
             name.includes("paint") || 
