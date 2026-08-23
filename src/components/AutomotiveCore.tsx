@@ -477,10 +477,10 @@ export default function AutomotiveCore() {
     const loadingTimeout = setTimeout(() => setModelLoading(false), 20000);
 
     const modelUrls = [
-      "/models/free_1975_porsche_911_930_turbo_opt.glb?v=2",
-      "https://cdn.jsdelivr.net/gh/iftkhar00490/new@main/public/models/free_1975_porsche_911_930_turbo_opt.glb?v=2",
-      "/models/car.glb",
-      "https://raw.githubusercontent.com/iftkhar00490/new/main/public/models/free_1975_porsche_911_930_turbo_opt.glb"
+      "/models/porsche_911_turbo.glb",
+      "https://raw.githubusercontent.com/iftkhar00490/new/main/public/models/porsche_911_turbo.glb",
+      "https://cdn.jsdelivr.net/gh/iftkhar00490/new@main/public/models/porsche_911_turbo.glb",
+      "/models/free_1975_porsche_911_930_turbo_opt.glb"
     ];
 
     const tryLoadModel = (urlIndex: number) => {
@@ -498,23 +498,38 @@ export default function AutomotiveCore() {
             clearTimeout(loadingTimeout);
             const rawCar = gltf.scene;
 
-            // 1. Calculate raw bounding box and scale to target size
-            const rawBox = new THREE.Box3().setFromObject(rawCar);
-            const rawSize = rawBox.getSize(new THREE.Vector3());
-            const maxDim = Math.max(rawSize.x, rawSize.y, rawSize.z) || 1;
+            // Filter rogue meshes and calculate clean car bounding box
+            const cleanBox = new THREE.Box3();
+            let foundMeshes = 0;
+
+            rawCar.traverse((node: any) => {
+              if (node.isMesh) {
+                const b = new THREE.Box3().setFromObject(node);
+                const s = b.getSize(new THREE.Vector3());
+                if (Math.max(s.x, s.y, s.z) > 15) {
+                  node.visible = false;
+                } else {
+                  cleanBox.expandByObject(node);
+                  foundMeshes++;
+                }
+              }
+            });
+
+            const initialBox = foundMeshes > 0 ? cleanBox : new THREE.Box3().setFromObject(rawCar);
+            const initialSize = initialBox.getSize(new THREE.Vector3());
+            const maxDim = Math.max(initialSize.x, initialSize.y, initialSize.z) || 1;
             const targetScale = 3.6 / maxDim;
             rawCar.scale.set(targetScale, targetScale, targetScale);
 
-            // 2. Recompute bounding box AFTER scaling to get exact center & dimensions
-            const scaledBox = new THREE.Box3().setFromObject(rawCar);
+            // Recompute bounding box after scale
+            const scaledBox = foundMeshes > 0 ? cleanBox.clone() : new THREE.Box3();
+            scaledBox.setFromObject(rawCar);
             const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
             const scaledSize = scaledBox.getSize(new THREE.Vector3());
 
-            // 3. Shift car so its geometric center aligns with (0, yOffset, 0)
             const yOffset = 0.15;
             rawCar.position.set(-scaledCenter.x, -scaledCenter.y + yOffset, -scaledCenter.z);
 
-            // 4. Wrap in a root Group so rotation spins cleanly around (0, 0, 0)
             const carRoot = new THREE.Group();
             carRoot.add(rawCar);
             carModelRef.current = carRoot;
@@ -525,7 +540,7 @@ export default function AutomotiveCore() {
             }
 
             rawCar.traverse((node: any) => {
-              if (node.isMesh) {
+              if (node.isMesh && node.visible) {
                 node.castShadow = true;
                 node.receiveShadow = true;
 
