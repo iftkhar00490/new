@@ -496,7 +496,7 @@ export default function AutomotiveCore() {
     let carModel: THREE.Object3D | null = null;
 
     loader.load(
-      "/models/free_1975_porsche_911_930_turbo_opt.glb",
+      "https://cdn.jsdelivr.net/gh/iftkhar00490/new@main/public/models/free_1975_porsche_911_930_turbo_opt.glb",
       (gltf) => {
         carModel = gltf.scene;
         carModelRef.current = gltf.scene;
