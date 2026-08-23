@@ -1,0 +1,20 @@
+﻿{
+  "name": "food-vision",
+  "alias": ["sia-com.vercel.app", "sia-visuals.vercel.app"],
+  "headers": [
+    {
+      "source": "/models/(.*).glb",
+      "headers": [
+        { "key": "Content-Type", "value": "model/gltf-binary" },
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    }
+  ]
+}
