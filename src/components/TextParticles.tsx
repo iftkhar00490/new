@@ -86,8 +86,10 @@ export default function TextParticles({ text }: TextParticlesProps) {
     const friction = 0.88;
 
     let animationFrameId: number;
+    let isVisible = true;
 
     const animate = () => {
+      if (!isVisible) return;
       ctx.clearRect(0, 0, width, height);
 
       const mouse = mouseRef.current;
@@ -134,12 +136,24 @@ export default function TextParticles({ text }: TextParticlesProps) {
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    // Use IntersectionObserver to pause when off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = requestAnimationFrame(animate);
+        } else {
+          cancelAnimationFrame(animationFrameId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(canvas);
 
     // Mouse events
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
-      // Translate window coordinate to canvas relative coordinate
       mouseRef.current.x = e.clientX - rect.left;
       mouseRef.current.y = e.clientY - rect.top;
       mouseRef.current.active = true;
@@ -155,6 +169,7 @@ export default function TextParticles({ text }: TextParticlesProps) {
     canvas.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId);
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mouseleave", handleMouseLeave);

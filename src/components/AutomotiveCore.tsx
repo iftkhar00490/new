@@ -334,9 +334,10 @@ export default function AutomotiveCore() {
     };
   }, [isDraggingVolume]);
 
-  // ADAS Camera Canvas Loop
+  // 2D Backup Camera Radar Canvas Animation Loop
   useEffect(() => {
-    if (activeApp !== "CAMERA" || !canvasRef.current) return;
+    if (activeApp !== "CAMERA") return;
+    if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -345,8 +346,6 @@ export default function AutomotiveCore() {
     let scanLine = 0;
 
     const render = () => {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
       const w = canvas.width;
       const h = canvas.height;
 
@@ -402,6 +401,8 @@ export default function AutomotiveCore() {
 
   // Three.js 3D WebGL Porsche 911 Supercar Engine Initialization Hook
   useEffect(() => {
+    // Only run WebGL 3D engine on desktop screens to preserve 60/120fps mobile scrolling
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
     if (!threeContainerRef.current) return;
     const container = threeContainerRef.current;
     
@@ -604,7 +605,10 @@ export default function AutomotiveCore() {
     tryLoadModel(0);
 
     let animId: number;
+    let isVisible = true;
+
     const animate = () => {
+      if (!isVisible) return;
       animId = requestAnimationFrame(animate);
       controls.update();
 
@@ -619,7 +623,20 @@ export default function AutomotiveCore() {
 
       renderer.render(scene, camera);
     };
-    animate();
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          cancelAnimationFrame(animId);
+          animId = requestAnimationFrame(animate);
+        } else {
+          cancelAnimationFrame(animId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    visibilityObserver.observe(container);
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -634,6 +651,7 @@ export default function AutomotiveCore() {
     resizeObserver.observe(container);
 
     return () => {
+      visibilityObserver.disconnect();
       cancelAnimationFrame(animId);
       resizeObserver.disconnect();
       renderer.dispose();

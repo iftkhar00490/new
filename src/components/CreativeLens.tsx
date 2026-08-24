@@ -56,12 +56,24 @@ export default function CreativeLens() {
   const [selectedImage, setSelectedImage] = useState<(SliderImage & { zoom?: string }) | null>(null);
   const [archiveFilter, setArchiveFilter] = useState<string>("ALL");
 
+  const activeLensIdxRef = useRef(0);
+  const subBatchIdxRef = useRef(0);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    activeLensIdxRef.current = activeLensIdx;
+  }, [activeLensIdx]);
+
+  useEffect(() => {
+    subBatchIdxRef.current = subBatchIdx;
+  }, [subBatchIdx]);
+
   // Ultra-smooth GSAP ScrollTrigger for pinned viewport & sub-batch progress
   useGSAP(
     () => {
       if (!sectionRef.current) return;
 
-      ScrollTrigger.create({
+      const st = ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
         end: "bottom bottom",
@@ -81,16 +93,23 @@ export default function CreativeLens() {
             numSubBatches - 1
           );
 
-          if (newLensIdx !== activeLensIdx) {
+          if (newLensIdx !== activeLensIdxRef.current) {
+            activeLensIdxRef.current = newLensIdx;
+            subBatchIdxRef.current = 0;
             setActiveLensIdx(newLensIdx);
             setSubBatchIdx(0);
-          } else if (newSubBatch !== subBatchIdx) {
+          } else if (newSubBatch !== subBatchIdxRef.current) {
+            subBatchIdxRef.current = newSubBatch;
             setSubBatchIdx(newSubBatch);
           }
         },
       });
+
+      return () => {
+        st.kill();
+      };
     },
-    { dependencies: [activeLensIdx, subBatchIdx] }
+    { dependencies: [] }
   );
 
   const setLensManual = (idx: number) => {
@@ -168,14 +187,14 @@ export default function CreativeLens() {
               >
                 {/* Slot 1: TOP LEFT */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.02 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: -1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.02 }}
                   onClick={() => setSelectedImage(currentImages[0])}
                   className={`${
                     currentImages[0].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] -ml-1 -mt-1 z-20" : "col-span-3 row-span-4 aspect-[9/16]"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[0].src} 
@@ -191,14 +210,14 @@ export default function CreativeLens() {
 
                 {/* Slot 2: TOP MID-LEFT OVERLAP */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: 1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.04 }}
                   onClick={() => setSelectedImage(currentImages[1])}
                   className={`${
                     currentImages[1].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-4 row-start-1 -ml-2 z-30" : "col-span-2 row-span-4 aspect-[9/16] col-start-4 row-start-1"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[1].src} 
@@ -210,14 +229,14 @@ export default function CreativeLens() {
 
                 {/* Slot 3: TOP RIGHT */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: -1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.06 }}
                   onClick={() => setSelectedImage(currentImages[2])}
                   className={`${
                     currentImages[2].aspect === "16/9" ? "col-span-4 row-span-2 aspect-[16/9] col-start-9 row-start-1 z-10" : "col-span-2 row-span-4 aspect-[9/16] col-start-11 row-start-1"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[2].src} 
@@ -229,14 +248,14 @@ export default function CreativeLens() {
 
                 {/* Slot 4: MID RIGHT OVERLAP */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: 1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
                   onClick={() => setSelectedImage(currentImages[3])}
                   className={`${
                     currentImages[3].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-8 row-start-3 z-30 -mt-1" : "col-span-3 row-span-4 aspect-[9/16] col-start-9 row-start-3"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[3].src} 
@@ -248,14 +267,14 @@ export default function CreativeLens() {
 
                 {/* Slot 5: MID LEFT OVERLAP */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: -1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
                   onClick={() => setSelectedImage(currentImages[4])}
                   className={`${
                     currentImages[4].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-1 row-start-5 z-20" : "col-span-3 row-span-4 aspect-[9/16] col-start-1 row-start-5"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[4].src} 
@@ -267,14 +286,14 @@ export default function CreativeLens() {
 
                 {/* Slot 6: MID FAR-RIGHT */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.14 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: 1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
                   onClick={() => setSelectedImage(currentImages[5])}
                   className={`${
                     currentImages[5].aspect === "16/9" ? "col-span-4 row-span-2 aspect-[16/9] col-start-9 row-start-5 z-10 -ml-2" : "col-span-2 row-span-4 aspect-[9/16] col-start-11 row-start-5"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[5].src} 
@@ -286,14 +305,14 @@ export default function CreativeLens() {
 
                 {/* Slot 7: BOTTOM LEFT */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.16 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: -1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.14 }}
                   onClick={() => setSelectedImage(currentImages[6])}
                   className={`${
                     currentImages[6].aspect === "16/9" ? "col-span-4 row-span-2 aspect-[16/9] col-start-1 row-start-9 z-10" : "col-span-2 row-span-4 aspect-[9/16] col-start-1 row-start-9"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[6].src} 
@@ -305,14 +324,14 @@ export default function CreativeLens() {
 
                 {/* Slot 8: BOTTOM MID-LEFT OVERLAP */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.18 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: 1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.16 }}
                   onClick={() => setSelectedImage(currentImages[7])}
                   className={`${
                     currentImages[7].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-4 row-start-9 z-30 -ml-2" : "col-span-3 row-span-4 aspect-[9/16] col-start-3 row-start-9"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[7].src} 
@@ -324,14 +343,14 @@ export default function CreativeLens() {
 
                 {/* Slot 9: BOTTOM MID-RIGHT OVERLAP */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: -2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: -1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.18 }}
                   onClick={() => setSelectedImage(currentImages[0])}
                   className={`${
                     currentImages[0].aspect === "16/9" ? "col-span-5 row-span-2 aspect-[16/9] col-start-7 row-start-9 z-10" : "col-span-3 row-span-4 aspect-[9/16] col-start-7 row-start-9"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[0].src} 
@@ -343,14 +362,14 @@ export default function CreativeLens() {
 
                 {/* Slot 10: BOTTOM RIGHT OVERLAP */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 1.2, filter: "blur(10px) brightness(1.3)", rotate: 2 }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(10px) brightness(0.7)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.22 }}
+                  initial={{ opacity: 0, scale: 1.08, rotate: 1.5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
                   onClick={() => setSelectedImage(currentImages[1])}
                   className={`${
                     currentImages[1].aspect === "16/9" ? "col-span-4 row-span-2 aspect-[16/9] col-start-9 row-start-9 z-20 -ml-2" : "col-span-3 row-span-4 aspect-[9/16] col-start-10 row-start-9"
-                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500`}
+                  } bg-neutral-950/90 border border-neutral-800/90 rounded-xl overflow-hidden pointer-events-auto cursor-pointer relative group shadow-2xl transition-all hover:z-40 hover:border-neutral-500 will-change-transform`}
                 >
                   <Image 
                     src={currentImages[1].src} 

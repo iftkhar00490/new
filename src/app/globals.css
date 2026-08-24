@@ -35,6 +35,7 @@ html {
   scroll-behavior: smooth;
   background-color: #000000;
   color: #ffffff;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -42,6 +43,8 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Hide focus rings except on keyboard navigation */
