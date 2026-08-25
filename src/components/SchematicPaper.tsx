@@ -201,9 +201,22 @@ export default function SchematicPaper() {
             <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-neutral-300 pointer-events-none group-hover:border-neutral-900 transition-colors" />
             
             <div>
-              <div className="flex items-center gap-2 mb-6">
-                <span className="px-2 py-0.5 bg-neutral-100 border border-neutral-200 text-[10px] font-mono text-neutral-500 rounded uppercase">Methodology A</span>
-                <span className="text-[10px] font-mono text-neutral-400">Power Grid Consistency</span>
+              <div className="flex items-center justify-between gap-2 mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 bg-neutral-100 border border-neutral-200 text-[10px] font-mono text-neutral-500 rounded uppercase">Methodology A</span>
+                  <span className="text-[10px] font-mono text-neutral-400">Power Grid Consistency</span>
+                </div>
+                <a
+                  href="https://evse-cyberlab-1.onrender.com/#/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-900 hover:bg-black text-white text-[10px] font-mono rounded-full tracking-wider transition-all shadow-sm hover:scale-105 active:scale-95 group/btn"
+                  title="Open Live EVSE CyberLab Testbed"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>LIVE TESTBED</span>
+                  <ArrowUpRight className="w-3 h-3 text-neutral-400 group-hover/btn:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                </a>
               </div>
 
               <h3 className="text-xl md:text-2xl font-sans font-semibold tracking-tight text-neutral-900 mb-2 group-hover:text-black">
@@ -264,6 +277,23 @@ export default function SchematicPaper() {
                 <text x="155" y="35" className="font-mono text-[8px]" fill="currentColor">Edge Charger</text>
                 <text x="225" y="35" className="font-mono text-[8px]" fill="#ff4444">Anomaly Delta</text>
               </svg>
+            </div>
+
+            {/* Card Action Row: Test It Out Button */}
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-neutral-100">
+              <div className="flex items-center gap-2 text-[9px] font-mono text-neutral-400 uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span>ONLINE TESTBED // EVSE-CYBERLAB</span>
+              </div>
+              <a
+                href="https://evse-cyberlab-1.onrender.com/#/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-4 py-1.5 bg-neutral-900 hover:bg-black text-white text-xs font-mono font-medium rounded-full tracking-wide transition-all shadow-sm hover:scale-[1.03] active:scale-[0.97] group/testbed w-fit"
+              >
+                <span>Test it out</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400 group-hover/testbed:text-white group-hover/testbed:translate-x-0.5 group-hover/testbed:-translate-y-0.5 transition-transform" />
+              </a>
             </div>
           </motion.div>
 
@@ -347,6 +377,15 @@ export default function SchematicPaper() {
                 <text x="210" y="30" className="font-mono text-[7px]" fill="currentColor">Cluster B (Nominal)</text>
                 <text x="125" y="12" className="font-mono text-[7px] font-bold" fill="#ff4444">Outliers (LOF &gt; 1.8)</text>
               </svg>
+            </div>
+
+            {/* Card Action Row: Status Indicator */}
+            <div className="mt-4 flex items-center justify-between pt-3 border-t border-neutral-100 text-[9px] font-mono text-neutral-400 uppercase tracking-wider">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-neutral-400" />
+                <span>ISOLATION PATH // LOF SCORE BENCHMARK</span>
+              </div>
+              <span className="text-neutral-500 font-semibold px-2 py-0.5 bg-neutral-100 rounded border border-neutral-200">EDGE PIPELINE</span>
             </div>
           </motion.div>
 
