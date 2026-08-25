@@ -177,15 +177,28 @@ export default function SchematicPaper() {
           <div className="mt-2 md:mt-0">DOCUMENT_REF: IEEE_EST_2026 // GRID_SECURE</div>
         </div>
 
-        {/* Section Title */}
-        <div className="mb-16">
-          <span className="font-mono text-xs uppercase tracking-widest text-neutral-500 block mb-2">[ Part 02 // Core Systems ]</span>
-          <h2 className="text-3xl md:text-5xl font-sans font-light tracking-tight text-neutral-900">
-            Core Engineering & Research
-          </h2>
-          <p className="mt-4 text-sm font-mono text-neutral-500 max-w-xl leading-relaxed">
-            Mathematical modeling of cyber-physical grid security and deployment of unsupervised machine learning telemetry models.
-          </p>
+        {/* Section Title & Prominent Live Testbed Action */}
+        <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <span className="font-mono text-xs uppercase tracking-widest text-neutral-500 block mb-2">[ Part 02 // Core Systems ]</span>
+            <h2 className="text-3xl md:text-5xl font-sans font-light tracking-tight text-neutral-900">
+              Core Engineering & Research
+            </h2>
+            <p className="mt-4 text-sm font-mono text-neutral-500 max-w-xl leading-relaxed">
+              Mathematical modeling of cyber-physical grid security and deployment of unsupervised machine learning telemetry models.
+            </p>
+          </div>
+
+          <a
+            href="https://evse-cyberlab-1.onrender.com/#/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 px-6 py-3.5 bg-neutral-950 hover:bg-black text-white text-xs md:text-sm font-mono font-semibold rounded-full tracking-wider transition-all shadow-md hover:shadow-xl hover:scale-105 active:scale-95 group/mainbtn border border-neutral-800 w-fit shrink-0 cursor-pointer"
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>ENTER LIVE TESTBED</span>
+            <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover/mainbtn:text-white group-hover/mainbtn:translate-x-0.5 group-hover/mainbtn:-translate-y-0.5 transition-transform" />
+          </a>
         </div>
 
         {/* Grid Layout: Academic Cards */}
