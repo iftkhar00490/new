@@ -51,6 +51,7 @@ const ALL_56_PHOTOS: (SliderImage & { zoom: string })[] = SLIDER_CONFIG.flatMap(
 
 export default function CreativeLens() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [activeLensIdx, setActiveLensIdx] = useState(0);
   const [subBatchIdx, setSubBatchIdx] = useState(0);
   const [selectedImage, setSelectedImage] = useState<(SliderImage & { zoom?: string }) | null>(null);
@@ -68,56 +69,74 @@ export default function CreativeLens() {
     subBatchIdxRef.current = subBatchIdx;
   }, [subBatchIdx]);
 
-  // Ultra-smooth GSAP ScrollTrigger for pinned viewport & sub-batch progress
-  useGSAP(
-    () => {
-      if (!sectionRef.current) return;
+  // Robust real-time scroll progress calculation
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!trackRef.current) return;
+      const rect = trackRef.current.getBoundingClientRect();
+      const totalDist = trackRef.current.offsetHeight - window.innerHeight;
+      if (totalDist <= 0) return;
 
-      const st = ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.8,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          const totalLenses = SLIDER_CONFIG.length;
-          const currentLensFloat = progress * totalLenses;
-          const newLensIdx = Math.min(Math.floor(currentLensFloat), totalLenses - 1);
+      // Progress from 0 to 1 as the sticky section scrolls through its 360vh track
+      const scrolled = -rect.top;
+      const rawProgress = Math.max(0, Math.min(1, scrolled / totalDist));
 
-          // Calculate sub-batch rotation inside active lens
-          const lensFraction = currentLensFloat - newLensIdx;
-          const activeImagesCount = SLIDER_CONFIG[newLensIdx].images.length;
-          const numSubBatches = Math.max(1, Math.ceil(activeImagesCount / 8));
-          const newSubBatch = Math.min(
-            Math.floor(lensFraction * numSubBatches),
-            numSubBatches - 1
-          );
+      const totalLenses = SLIDER_CONFIG.length;
+      const lensFloat = rawProgress * totalLenses;
+      const newLensIdx = Math.min(Math.floor(lensFloat), totalLenses - 1);
 
-          if (newLensIdx !== activeLensIdxRef.current) {
-            activeLensIdxRef.current = newLensIdx;
-            subBatchIdxRef.current = 0;
-            setActiveLensIdx(newLensIdx);
-            setSubBatchIdx(0);
-          } else if (newSubBatch !== subBatchIdxRef.current) {
-            subBatchIdxRef.current = newSubBatch;
-            setSubBatchIdx(newSubBatch);
-          }
-        },
-      });
+      // Sub-batch rotation inside active lens
+      const lensFraction = lensFloat - newLensIdx;
+      const activeImagesCount = SLIDER_CONFIG[newLensIdx].images.length;
+      const numSubBatches = Math.max(1, Math.ceil(activeImagesCount / 8));
+      const newSubBatch = Math.min(
+        Math.floor(lensFraction * numSubBatches),
+        numSubBatches - 1
+      );
 
-      return () => {
-        st.kill();
-      };
-    },
-    { dependencies: [] }
-  );
+      if (newLensIdx !== activeLensIdxRef.current) {
+        activeLensIdxRef.current = newLensIdx;
+        subBatchIdxRef.current = 0;
+        setActiveLensIdx(newLensIdx);
+        setSubBatchIdx(0);
+      } else if (newSubBatch !== subBatchIdxRef.current) {
+        subBatchIdxRef.current = newSubBatch;
+        setSubBatchIdx(newSubBatch);
+      }
+    };
 
-  const setLensManual = (idx: number) => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+    handleScroll();
+
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+      handleScroll();
+    }, 600);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      clearTimeout(refreshTimer);
+    };
+  }, []);
+
+  const scrollToLens = (idx: number) => {
     setActiveLensIdx(idx);
     setSubBatchIdx(0);
+    activeLensIdxRef.current = idx;
+    subBatchIdxRef.current = 0;
+    if (trackRef.current) {
+      const rect = trackRef.current.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const trackTop = rect.top + scrollTop;
+      const trackHeight = trackRef.current.offsetHeight - window.innerHeight;
+      const targetScroll = trackTop + (idx / SLIDER_CONFIG.length) * trackHeight + 20;
+      window.scrollTo({ top: targetScroll, behavior: "smooth" });
+    }
   };
 
-  const currentLens = SLIDER_CONFIG[activeLensIdx];
+  const currentLens = SLIDER_CONFIG[activeLensIdx] || SLIDER_CONFIG[0];
   
   // Slice images for current sub-batch so all 56 photos cycle through
   const startImgIdx = (subBatchIdx * 8) % Math.max(1, currentLens.images.length);
@@ -135,21 +154,41 @@ export default function CreativeLens() {
   return (
     <div ref={sectionRef} className="relative bg-black text-white selection:bg-white selection:text-black">
       {/* 1. PINNED STICKY VIEWPORT CONTAINER (h-[360vh]) */}
-      <div className="relative h-[360vh]">
+      <div ref={trackRef} className="relative h-[360vh]">
         <div className="sticky top-0 h-screen bg-black flex flex-col justify-between p-4 md:p-8 overflow-hidden border-t border-neutral-900 z-10">
           
-          {/* STUDIO FREIGHT HEADER BAR */}
-          <div className="w-full flex justify-between items-center font-mono text-[11px] text-neutral-400 z-30 px-2">
-            <div className="flex items-center gap-2">
+          {/* STUDIO FREIGHT HEADER BAR WITH FOCAL LENGTH SWITCHER */}
+          <div className="w-full flex justify-between items-center font-mono text-[11px] text-neutral-400 z-30 px-2 gap-4">
+            <div className="flex items-center gap-2 shrink-0">
               <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              <span className="font-bold text-white tracking-widest uppercase">SIA.COM • OPTICAL ARCHIVE</span>
+              <span className="font-bold text-white tracking-widest uppercase hidden sm:inline">SIA.COM • OPTICAL ARCHIVE</span>
+              <span className="font-bold text-white tracking-widest uppercase sm:hidden">OPTICAL ARCHIVE</span>
             </div>
 
-            <div className="hidden md:flex items-center gap-6 text-[10px] text-neutral-500 uppercase tracking-widest font-semibold">
-              <span>{ALL_56_PHOTOS.length} CURATED ARCHIVAL CAPTURES</span>
+            {/* FOCAL LENGTH SELECTOR HUD (0.5X | 1X | 3X | 10X) */}
+            <div className="flex items-center gap-1 bg-neutral-950/90 backdrop-blur-md p-1 rounded-full border border-neutral-800 shadow-xl">
+              {SLIDER_CONFIG.map((lens, idx) => {
+                const isActive = activeLensIdx === idx;
+                return (
+                  <button
+                    key={lens.zoom}
+                    onClick={() => scrollToLens(idx)}
+                    className={`px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-mono transition-all cursor-pointer flex items-center gap-1 ${
+                      isActive
+                        ? "bg-white text-black font-bold shadow-md scale-105"
+                        : "text-neutral-400 hover:text-white hover:bg-neutral-900"
+                    }`}
+                  >
+                    {isActive && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />}
+                    <span>{lens.zoom.toUpperCase()}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <span className="font-mono text-[11px] text-neutral-400 uppercase tracking-widest">CONTACT</span>
+            <div className="hidden md:flex items-center gap-6 text-[10px] text-neutral-500 uppercase tracking-widest font-semibold shrink-0">
+              <span>{ALL_56_PHOTOS.length} ARCHIVAL CAPTURES</span>
+            </div>
           </div>
 
           {/* ASYMMETRICAL UNEVEN PHOTO MATRIX WITH CENTERED UNCONTAINED TEXT */}
@@ -157,7 +196,7 @@ export default function CreativeLens() {
             
             {/* CENTER STAGE: DYNAMIC LENS TITLE ELEVATED TO Z-50 ABOVE ALL PHOTO CARDS */}
             <div className="absolute z-50 flex flex-col items-center justify-center text-center px-4 py-3 max-w-[200px] sm:max-w-md md:max-w-2xl pointer-events-none mx-auto">
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 <motion.h2
                   key={currentLens.zoom}
                   initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
@@ -176,13 +215,13 @@ export default function CreativeLens() {
             </div>
 
             {/* ASYMMETRICAL SURROUNDING PHOTO CLUSTERS WITH OPTICAL WARP ZOOM TRANSITION */}
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               <motion.div
                 key={`${currentLens.zoom}-${subBatchIdx}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.35 }}
                 className="absolute inset-0 w-full h-full p-2 grid grid-cols-12 grid-rows-12 gap-2.5 md:gap-3 pointer-events-none"
               >
                 {/* Slot 1: TOP LEFT */}
