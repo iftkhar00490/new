@@ -26,23 +26,23 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
     return () => window.removeEventListener("resize", updateTarget);
   }, []);
 
-  // Animation timeline progression (paced gracefully)
+  // Animation timeline progression (6-second cinematic buffer)
   useEffect(() => {
-    // Phase 1: Draw "hello" smoothly (0s - 2.2s)
+    // Phase 1 -> 2: "hello" draws (0s - 3.2s) + brief luminous hold (3.2s - 4.0s), then beam travels
     const travelTimer = setTimeout(() => {
       setPhase("traveling");
-    }, 2300);
+    }, 4000);
 
-    // Phase 2: Line gracefully sweeps to the header dot (2.3s - 3.4s)
+    // Phase 2 -> 3: Line gracefully sweeps to the header dot & triggers flash at 5.1s
     const flashTimer = setTimeout(() => {
       setPhase("flash");
-    }, 3400);
+    }, 5100);
 
-    // Phase 3: Radiant light flash & unveil (3.4s - 4.2s)
+    // Phase 3 -> Finish: Radiant light flash dissolves into live page at exactly 6.0s
     const finishTimer = setTimeout(() => {
       setPhase("done");
       onComplete();
-    }, 4200);
+    }, 6000);
 
     return () => {
       clearTimeout(travelTimer);
@@ -115,7 +115,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
             strokeLinejoin="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 2.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 3.0, ease: [0.25, 1, 0.4, 1] }}
           />
 
           {/* Foreground Crisp White Stroke */}
@@ -129,7 +129,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
             filter="url(#appleGlow)"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 2.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 3.0, ease: [0.25, 1, 0.4, 1] }}
           />
         </motion.svg>
       </div>
@@ -162,7 +162,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
               animate={{ 
                 pathLength: [0, 1], 
                 opacity: [0, 1, 0.8],
-                transition: { duration: 1.0, ease: [0.25, 1, 0.5, 1] } 
+                transition: { duration: 1.1, ease: [0.25, 1, 0.5, 1] } 
               }}
             />
 
@@ -182,7 +182,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
                 cy: targetPos.y,
                 opacity: [0, 1, 1],
                 scale: [0.8, 1.6, 1.2],
-                transition: { duration: 1.0, ease: [0.25, 1, 0.5, 1] }
+                transition: { duration: 1.1, ease: [0.25, 1, 0.5, 1] }
               }}
             />
           </svg>
@@ -206,7 +206,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
               animate={{ 
                 scale: [0, 28, 44], 
                 opacity: [0, 1, 0],
-                transition: { duration: 0.75, ease: "easeOut" } 
+                transition: { duration: 0.9, ease: "easeOut" } 
               }}
               className="absolute w-12 h-12 rounded-full bg-[radial-gradient(circle,#ffffff_0%,rgba(255,255,255,0.95)_20%,rgba(56,189,248,0.4)_50%,transparent_75%)]"
             />
@@ -217,7 +217,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
               animate={{ 
                 scaleX: [0, 2.0, 0], 
                 opacity: [0, 0.95, 0],
-                transition: { duration: 0.7, ease: "easeOut" } 
+                transition: { duration: 0.85, ease: "easeOut" } 
               }}
               className="absolute h-[2px] w-[340px] sm:w-[520px] bg-white blur-[1px] shadow-[0_0_14px_#38bdf8]"
             />
@@ -229,7 +229,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
                 scale: 3.5, 
                 opacity: 0, 
                 borderWidth: "1px",
-                transition: { duration: 0.75, ease: "easeOut" } 
+                transition: { duration: 0.9, ease: "easeOut" } 
               }}
               className="absolute w-20 h-20 rounded-full border border-cyan-300"
             />
@@ -239,7 +239,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
               initial={{ opacity: 0 }}
               animate={{ 
                 opacity: [0, 0.4, 0],
-                transition: { duration: 0.65, ease: "easeOut" } 
+                transition: { duration: 0.8, ease: "easeOut" } 
               }}
               className="fixed inset-0 bg-white pointer-events-none"
             />
