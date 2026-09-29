@@ -10,6 +10,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
+import HelloPreloader from "@/components/HelloPreloader";
+
 const REVEAL_ITEMS = [
   { type: "text", content: "Hey" },
   { type: "text", content: "there," },
@@ -32,35 +34,30 @@ const REVEAL_ITEMS = [
 ];
 
 export default function EntranceTerminal() {
-  const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Preloader count-up simulation
+  // Manage body overflow during intro preloader
   useEffect(() => {
-    let current = 0;
-    const interval = setInterval(() => {
-      const increment = Math.floor(Math.random() * 6) + 3;
-      current = Math.min(current + increment, 100);
-      setLoadingProgress(current);
-
-      if (current === 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsLoaded(true);
-          document.body.style.overflow = "unset";
-        }, 500);
-      }
-    }, 40);
-
-    document.body.style.overflow = "hidden";
+    if (!isLoaded) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
 
     return () => {
-      clearInterval(interval);
       document.body.style.overflow = "unset";
     };
-  }, []);
+  }, [isLoaded]);
+
+  const handlePreloaderComplete = () => {
+    setIsLoaded(true);
+    document.body.style.overflow = "unset";
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+  };
 
   useGSAP(() => {
     if (!isLoaded) return;
@@ -102,53 +99,10 @@ export default function EntranceTerminal() {
 
   return (
     <div className="relative w-full select-none bg-black">
-      {/* 1. Camille Mormal Premium Preloader */}
+      {/* 1. Apple "hello" Cursive Light Preloader */}
       <AnimatePresence>
         {!isLoaded && (
-          <motion.div
-            key="preloader"
-            initial={{ opacity: 1 }}
-            exit={{ 
-              y: "-100%", 
-              transition: { duration: 1.1, ease: [0.76, 0, 0.24, 1] } 
-            }}
-            className="fixed inset-0 bg-neutral-950 z-50 flex flex-col justify-between p-6 md:p-12 text-white"
-          >
-            {/* Top Indicator */}
-            <div className="flex justify-between items-center text-[10px] font-mono tracking-widest text-neutral-500">
-              <span>LOADING PORTFOLIO</span>
-              <span>EST. {new Date().getFullYear()}</span>
-            </div>
-
-            {/* Center Loading Numbers */}
-            <div className="flex flex-col items-center justify-center">
-              <div className="overflow-hidden h-24 md:h-36 flex items-center justify-center">
-                <motion.div 
-                  initial={{ y: "100%" }}
-                  animate={{ y: "0%" }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="text-8xl md:text-[11rem] font-sans font-extrabold tracking-tighter leading-none flex items-baseline select-none"
-                >
-                  {String(loadingProgress).padStart(3, "0")}
-                  <span className="text-sm md:text-xl font-mono font-light text-neutral-500 ml-2">%</span>
-                </motion.div>
-              </div>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.3, 0.8, 0.3] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                className="mt-4 font-mono text-[9px] text-neutral-500 tracking-widest uppercase"
-              >
-                Loading Assets
-              </motion.div>
-            </div>
-
-            {/* Bottom Status bar */}
-            <div className="flex justify-between items-end border-t border-neutral-900 pt-6 text-[10px] font-mono text-neutral-600">
-              <span>PORTFOLIO</span>
-              <span>{loadingProgress}%</span>
-            </div>
-          </motion.div>
+          <HelloPreloader onComplete={handlePreloaderComplete} />
         )}
       </AnimatePresence>
 
@@ -170,7 +124,7 @@ export default function EntranceTerminal() {
           {/* Minimalist HUD Header */}
           <header className="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center text-[10px] font-mono tracking-widest text-neutral-500 z-20">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-white rounded-full" />
+              <span className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.9)] animate-pulse" />
               <span>PORTFOLIO</span>
             </div>
           </header>
