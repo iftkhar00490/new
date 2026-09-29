@@ -26,23 +26,23 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
     return () => window.removeEventListener("resize", updateTarget);
   }, []);
 
-  // Animation timeline progression
+  // Animation timeline progression (paced gracefully)
   useEffect(() => {
-    // Phase 1: Draw "hello" (0s - 1.4s)
+    // Phase 1: Draw "hello" smoothly (0s - 2.2s)
     const travelTimer = setTimeout(() => {
       setPhase("traveling");
-    }, 1400);
+    }, 2300);
 
-    // Phase 2: Line travels to the dot & reaches target (1.4s - 2.1s)
+    // Phase 2: Line gracefully sweeps to the header dot (2.3s - 3.4s)
     const flashTimer = setTimeout(() => {
       setPhase("flash");
-    }, 2100);
+    }, 3400);
 
-    // Phase 3: Flash burst & unveil (2.1s - 2.6s)
+    // Phase 3: Radiant light flash & unveil (3.4s - 4.2s)
     const finishTimer = setTimeout(() => {
       setPhase("done");
       onComplete();
-    }, 2600);
+    }, 4200);
 
     return () => {
       clearTimeout(travelTimer);
@@ -115,7 +115,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
             strokeLinejoin="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 1.3, ease: [0.25, 1, 0.5, 1] }}
+            transition={{ duration: 2.1, ease: [0.22, 1, 0.36, 1] }}
           />
 
           {/* Foreground Crisp White Stroke */}
@@ -129,7 +129,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
             filter="url(#appleGlow)"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 1.3, ease: [0.25, 1, 0.5, 1] }}
+            transition={{ duration: 2.1, ease: [0.22, 1, 0.36, 1] }}
           />
         </motion.svg>
       </div>
@@ -162,15 +162,15 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
               animate={{ 
                 pathLength: [0, 1], 
                 opacity: [0, 1, 0.8],
-                transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } 
+                transition: { duration: 1.0, ease: [0.25, 1, 0.5, 1] } 
               }}
             />
 
             {/* Traveling Comet / Head Spark */}
             <motion.circle
-              r="4"
+              r="4.5"
               fill="#ffffff"
-              filter="drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 20px #38bdf8)"
+              filter="drop-shadow(0 0 12px #ffffff) drop-shadow(0 0 24px #38bdf8)"
               initial={{
                 cx: typeof window !== "undefined" ? window.innerWidth / 2 + 120 : 700,
                 cy: typeof window !== "undefined" ? window.innerHeight / 2 + 20 : 400,
@@ -182,7 +182,7 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
                 cy: targetPos.y,
                 opacity: [0, 1, 1],
                 scale: [0.8, 1.6, 1.2],
-                transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] }
+                transition: { duration: 1.0, ease: [0.25, 1, 0.5, 1] }
               }}
             />
           </svg>
@@ -204,32 +204,32 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
-                scale: [0, 25, 40], 
+                scale: [0, 28, 44], 
                 opacity: [0, 1, 0],
-                transition: { duration: 0.55, ease: "easeOut" } 
+                transition: { duration: 0.75, ease: "easeOut" } 
               }}
-              className="absolute w-12 h-12 rounded-full bg-[radial-gradient(circle,#ffffff_0%,rgba(255,255,255,0.9)_20%,rgba(56,189,248,0.4)_50%,transparent_75%)]"
+              className="absolute w-12 h-12 rounded-full bg-[radial-gradient(circle,#ffffff_0%,rgba(255,255,255,0.95)_20%,rgba(56,189,248,0.4)_50%,transparent_75%)]"
             />
 
             {/* Horizontal Flare Anamorphic Beam */}
             <motion.div
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ 
-                scaleX: [0, 1.8, 0], 
-                opacity: [0, 0.9, 0],
-                transition: { duration: 0.5, ease: "easeOut" } 
+                scaleX: [0, 2.0, 0], 
+                opacity: [0, 0.95, 0],
+                transition: { duration: 0.7, ease: "easeOut" } 
               }}
-              className="absolute h-[2px] w-[320px] sm:w-[480px] bg-white blur-[1px] shadow-[0_0_12px_#38bdf8]"
+              className="absolute h-[2px] w-[340px] sm:w-[520px] bg-white blur-[1px] shadow-[0_0_14px_#38bdf8]"
             />
 
             {/* Shockwave Glow Ring */}
             <motion.div
-              initial={{ scale: 0.2, opacity: 0.9, borderWidth: "3px" }}
+              initial={{ scale: 0.2, opacity: 0.95, borderWidth: "3px" }}
               animate={{ 
-                scale: 3, 
+                scale: 3.5, 
                 opacity: 0, 
                 borderWidth: "1px",
-                transition: { duration: 0.55, ease: "easeOut" } 
+                transition: { duration: 0.75, ease: "easeOut" } 
               }}
               className="absolute w-20 h-20 rounded-full border border-cyan-300"
             />
@@ -238,8 +238,8 @@ export default function HelloPreloader({ onComplete }: HelloPreloaderProps) {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ 
-                opacity: [0, 0.35, 0],
-                transition: { duration: 0.45, ease: "easeOut" } 
+                opacity: [0, 0.4, 0],
+                transition: { duration: 0.65, ease: "easeOut" } 
               }}
               className="fixed inset-0 bg-white pointer-events-none"
             />
